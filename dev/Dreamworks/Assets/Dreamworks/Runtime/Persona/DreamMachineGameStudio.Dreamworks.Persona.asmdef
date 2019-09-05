@@ -1,0 +1,14 @@
+{
+    "name": "DreamMachineGameStudio.DreamWork.Persona",
+    "references": [
+        "GUID:f7f1960c3bffcec4cb440c2f128a380a"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": []
+}

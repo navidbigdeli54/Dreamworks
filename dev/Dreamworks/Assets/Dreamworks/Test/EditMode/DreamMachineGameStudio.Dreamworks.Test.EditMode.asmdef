@@ -1,0 +1,23 @@
+{
+    "name": "DreamMachineGameStudio.Dreamworks.Test.EditMode",
+    "references": [
+        "DreamMachineGameStudio.Dreamwork.Test.Dummy",
+        "UnityEngine.TestRunner",
+        "UnityEditor.TestRunner",
+        "DreamMachineGameStudio.Dreamworks"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": []
+}
