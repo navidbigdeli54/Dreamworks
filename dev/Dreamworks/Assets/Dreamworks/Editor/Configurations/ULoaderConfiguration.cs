@@ -43,9 +43,9 @@ namespace DreamMachineGameStudio.Dreamworks.Editor
             startupSubClasses = FReflectionUtility.GetSubTypesOf<SStartup>();
             startupSubClassesNames = startupSubClasses?.Select(x => x.FullName).ToArray();
 
-            dontLoadFramework = serializedObject.FindProperty("_dontLoadFramework");
+            dontLoadFramework = serializedObject.FindProperty("dontLoadFramework");
 
-            startupClass = serializedObject.FindProperty("_startupClass");
+            startupClass = serializedObject.FindProperty("startupClass");
             selectedIndex = Array.IndexOf(startupSubClassesNames, startupClass.stringValue);
         }
 

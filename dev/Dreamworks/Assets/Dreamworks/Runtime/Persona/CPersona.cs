@@ -12,7 +12,7 @@ namespace DreamMachineGameStudio.Dreamworks.Persona
     public class CPersona : CComponent
     {
         #region Field
-        private Animation animation;
+        private new Animation animation;
         #endregion
 
         #region Method
