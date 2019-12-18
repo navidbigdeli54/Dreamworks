@@ -7,20 +7,19 @@ namespace DreamMachineGameStudio.Dreamworks.SceneManagement
 {
     /// <Author>Navid Bigdeli</Author>
     /// <CreationDate>August/8/2019</CreationDate>
-    public class FActiveSceneChangedEventArg : EventArgs
+    public class FSceneLoadedEventArg : EventArgs
     {
         #region Property
-        public Scene ReplacedScene { get; }
+        public readonly Scene Scene;
 
-        public Scene NextScene { get; }
+        public readonly LoadSceneMode LoadMode;
         #endregion
 
         #region Constructor
-        public FActiveSceneChangedEventArg(Scene replacedScene, Scene nextScene)
+        public FSceneLoadedEventArg(Scene scene, LoadSceneMode loadMode)
         {
-            ReplacedScene = replacedScene;
-
-            NextScene = nextScene;
+            Scene = scene;
+            LoadMode = loadMode;
         }
         #endregion
     }

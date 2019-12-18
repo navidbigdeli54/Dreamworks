@@ -34,8 +34,6 @@ namespace DreamMachineGameStudio.Dreamworks.Core
 
             new GameObject().AddComponent<MDreamwork>();
 
-            FServiceLocator.Register<ISceneManagement>(new GameObject().AddComponent<CSceneManagement>());
-
             Configuration();
 
             MDreamwork.Instance.StartUp();
