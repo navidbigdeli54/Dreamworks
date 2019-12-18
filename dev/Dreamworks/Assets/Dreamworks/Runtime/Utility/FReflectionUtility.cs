@@ -59,19 +59,22 @@ namespace DreamMachineGameStudio.Dreamworks.Utility
         /// <returns></returns>
         public static IEnumerable<Type> GetSubTypesOf<T>()
         {
-            Type desireType = typeof(T);
+            return GetSubTypesOf(typeof(T));
+        }
 
+        public static IEnumerable<Type> GetSubTypesOf(Type type)
+        {
             List<Type> result = new List<Type>();
 
             foreach (var assemblyTypes in assemblies.Values)
             {
-                if (desireType.IsInterface)
+                if (type.IsInterface)
                 {
-                    result.AddRange(assemblyTypes.Where(row => row.GetInterface(desireType.Name) != null));
+                    result.AddRange(assemblyTypes.Where(row => row.GetInterface(type.Name) != null));
                 }
                 else
                 {
-                    result.AddRange(assemblyTypes.Where(row => row.IsSubclassOf(desireType)));
+                    result.AddRange(assemblyTypes.Where(row => row.IsSubclassOf(type)));
                 }
             }
 
@@ -111,7 +114,9 @@ namespace DreamMachineGameStudio.Dreamworks.Utility
 
             try
             {
-                return (T)propertyInfo.GetValue(instanceType.GetCustomAttribute(attributeType));
+                Attribute attribute = instanceType.GetCustomAttribute(attributeType);
+
+                return (T)propertyInfo.GetValue(attribute);
             }
             catch (InvalidCastException exception)
             {
