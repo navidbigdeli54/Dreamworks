@@ -1,8 +1,6 @@
 ﻿/**Copyright 2016 - 2019, Dream Machine Game Studio. All Right Reserved.*/
 
 using UnityEngine;
-using DreamMachineGameStudio.Dreamworks.ServiceLocator;
-using DreamMachineGameStudio.Dreamworks.SceneManagement;
 
 namespace DreamMachineGameStudio.Dreamworks.Core
 {

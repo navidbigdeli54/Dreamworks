@@ -9,12 +9,7 @@ using UnityEngine.SceneManagement;
 using DreamMachineGameStudio.Dreamworks.Debug;
 using DreamMachineGameStudio.Dreamworks.EventManager;
 
-
-#if UNITY_EDITOR
-using USceneManager = UnityEditor.SceneManagement.EditorSceneManager;
-#else
 using USceneManager = UnityEngine.SceneManagement.SceneManager;
-#endif
 
 
 namespace DreamMachineGameStudio.Dreamworks.SceneManagement
@@ -33,17 +28,8 @@ namespace DreamMachineGameStudio.Dreamworks.SceneManagement
             USceneManager.activeSceneChanged += ActiveSceneChanged;
             USceneManager.sceneLoaded += SceneLoaded;
             USceneManager.sceneUnloaded += SceneUnloaded;
-
-#if UNITY_EDITOR
-            /*
-             * In Editor mode, Unity dose not send SceneLoaded event for open level after hitting play button.
-             * To be able to play any level, we need a fake SceneLoaded for current open level.
-            */
-            FEventManager.Subscribe(FDefaultEventNameHelper.ON_INITIALIZATION, (_) => { SceneLoaded(USceneManager.GetActiveScene(), LoadSceneMode.Single); });
-#endif
         }
         #endregion
-
 
         #region Method
         public async Task LoadSceneAsync(int sceneIndex, LoadSceneMode loadSceneMode)
