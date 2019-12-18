@@ -9,7 +9,7 @@ namespace DreamMachineGameStudio.Dreamworks.ServiceLocator.Editor
 {
     /// <Author>Navid Bigdeli</Author>
     /// <CreationDate>December/18/2019</CreationDate>
-    public class SServiceLocatorEditor : EditorWindow
+    public class UServiceLocatorEditor : EditorWindow
     {
         #region Fields
         private Vector3 scrollPosition;
@@ -43,7 +43,7 @@ namespace DreamMachineGameStudio.Dreamworks.ServiceLocator.Editor
         [MenuItem("DreamMachineGameStudio/Service Locator")]
         private static void OpenWindow()
         {
-            GetWindow<SServiceLocatorEditor>("Service Locator", focus: true);
+            GetWindow<UServiceLocatorEditor>("Service Locator", focus: true);
         }
         #endregion
     }

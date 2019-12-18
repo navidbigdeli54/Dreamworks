@@ -11,7 +11,7 @@ namespace DreamMachineGameStudio.Dreamworks.EventManager.Editor
 {
     /// <Author>Navid Bigdeli</Author>
     /// <CreationDate>December/18/2019</CreationDate>
-    public class SEventManagerEditor : EditorWindow
+    public class UEventManagerEditor : EditorWindow
     {
         #region Fields
         private Vector3 scrollPosition;
@@ -52,7 +52,7 @@ namespace DreamMachineGameStudio.Dreamworks.EventManager.Editor
         [MenuItem("DreamMachineGameStudio/Event Manager")]
         private static void OpenWindow()
         {
-            GetWindow<SEventManagerEditor>("Event Management", focus: true);
+            GetWindow<UEventManagerEditor>("Event Management", focus: true);
         }
         #endregion
     }
