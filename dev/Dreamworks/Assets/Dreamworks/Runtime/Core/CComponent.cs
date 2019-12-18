@@ -82,6 +82,8 @@ namespace DreamMachineGameStudio.Dreamworks.Core
         {
             CachedTransform = GetComponent<Transform>();
 
+            transform.position = new Vector3();
+
             await MDreamwork.Instance.RegisterAsycn(this);
 
             HasRegistered = true;

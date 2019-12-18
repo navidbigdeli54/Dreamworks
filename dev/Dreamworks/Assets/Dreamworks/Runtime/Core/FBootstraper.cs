@@ -26,14 +26,14 @@ namespace DreamMachineGameStudio.Dreamworks.Core
 
             if (configuration == null)
             {
-                FLog.LogError("Can't read framework configuration.", null, CLASS_TYPE.Name);
+                FLog.Error(CLASS_TYPE.Name, "Can't read framework configuration.");
 
                 return;
             }
 
             if (configuration.DontLoadFramework)
             {
-                FLog.Log("DontLoadFramework is true.", null, CLASS_TYPE.Name);
+                FLog.Log(CLASS_TYPE.Name, "DontLoadFramework is true.");
 
                 return;
             }
@@ -42,14 +42,14 @@ namespace DreamMachineGameStudio.Dreamworks.Core
 
             if (startupType == null)
             {
-                FLog.LogError("Startup type has not been selected, Please select a startup type in framework's configuration.", null, CLASS_TYPE.Name);
+                FLog.Error(CLASS_TYPE.Name, "Startup type has not been selected, Please select a startup type in framework's configuration.");
 
                 return;
             }
 
             if (startupType.IsSubclassOf(typeof(SStartup)) == false)
             {
-                FLog.LogError("Startup class should be a subclass of `SStartup`.", null, CLASS_TYPE.Name);
+                FLog.Error(CLASS_TYPE.Name, "Startup class should be a subclass of `SStartup`.");
 
                 return;
             }
@@ -61,7 +61,7 @@ namespace DreamMachineGameStudio.Dreamworks.Core
             }
             else
             {
-                FLog.LogError("Can't instantiate startup object.", null, CLASS_TYPE.Name);
+                FLog.Error(CLASS_TYPE.Name, "Can't instantiate startup object.");
 
                 return;
             }

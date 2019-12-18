@@ -16,7 +16,7 @@ namespace DreamMachineGameStudio.Dreamworks.Utility
     public static class FReflectionUtility
     {
         #region Field
-        private const BindingFlags bindingFlags = BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy;
+        private const BindingFlags BINDING_FLAGS = BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy;
 
         private static readonly IDictionary<Assembly, Type[]> assemblies = new Dictionary<Assembly, Type[]>();
         #endregion
@@ -27,11 +27,6 @@ namespace DreamMachineGameStudio.Dreamworks.Utility
 
         #region Constructor
         static FReflectionUtility()
-        {
-            CacheAssemblies();
-        }
-
-        private static void CacheAssemblies()
         {
             foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
             {
@@ -49,23 +44,9 @@ namespace DreamMachineGameStudio.Dreamworks.Utility
         /// <returns></returns>
         public static bool HasDefinedAttribute(Type classType, Type attributeType)
         {
-            if (classType == null)
-            {
-                FLog.LogError("Class type should not be null.", null, CLASS_TYPE.Name);
-                return false;
-            }
-
-            if (attributeType == null)
-            {
-                FLog.LogError("Attribute type should not be null.", null, CLASS_TYPE.Name);
-                return false;
-            }
-
-            if (attributeType.IsSubclassOf(typeof(Attribute)) == false)
-            {
-                FLog.LogError($"{attributeType.Name} is not subtype of {nameof(Attribute)} class.", null, CLASS_TYPE.Name);
-                return false;
-            }
+            FAssert.IsNotNull(classType);
+            FAssert.IsNotNull(attributeType);
+            FAssert.IsTrue(attributeType.IsSubclassOf(typeof(Attribute)));
 
             return classType.IsDefined(attributeType);
         }
@@ -115,45 +96,18 @@ namespace DreamMachineGameStudio.Dreamworks.Utility
         /// <returns>Value of desire property in given attribute</returns>
         public static T GetAttributeProperty<T>(object instance, Type attributeType, string propertyName)
         {
-            if (instance == null)
-            {
-                FLog.LogError("Instance should not be null.", null, CLASS_TYPE.Name);
-                return default;
-            }
-
-            if (attributeType == null)
-            {
-                FLog.LogError("Attribute type should not be null.", null, CLASS_TYPE.Name);
-                return default;
-            }
-
-            if (string.IsNullOrEmpty(propertyName))
-            {
-                FLog.LogError("Property name should not be null or empty", null, CLASS_TYPE.Name);
-                return default;
-            }
-
-            if (attributeType.IsSubclassOf(typeof(Attribute)) == false)
-            {
-                FLog.LogError($"{attributeType.Name} is not subtype of {nameof(Attribute)}", null, CLASS_TYPE.Name);
-                return default;
-            }
+            FAssert.IsNotNull(instance);
+            FAssert.IsNotNull(attributeType);
+            FAssert.IsFalse(string.IsNullOrEmpty(propertyName));
+            FAssert.IsTrue(attributeType.IsSubclassOf(typeof(Attribute)));
 
             Type instanceType = instance.GetType();
 
-            if (HasDefinedAttribute(instanceType, attributeType) == false)
-            {
-                FLog.LogError($"{instance.GetType().Name} does not defined {attributeType.Name} attribute.", null, CLASS_TYPE.Name);
-                return default;
-            }
+            FAssert.IsTrue(HasDefinedAttribute(instanceType, attributeType));
 
-            PropertyInfo propertyInfo = attributeType.GetProperty(propertyName, bindingFlags);
+            PropertyInfo propertyInfo = attributeType.GetProperty(propertyName, BINDING_FLAGS);
 
-            if (propertyInfo == null)
-            {
-                FLog.LogError($"There is no {propertyName} property in {attributeType.Name} attribute.", null, CLASS_TYPE.Name);
-                return default;
-            }
+            FAssert.IsNotNull(propertyInfo);
 
             try
             {
@@ -161,7 +115,32 @@ namespace DreamMachineGameStudio.Dreamworks.Utility
             }
             catch (InvalidCastException exception)
             {
-                FLog.LogError(exception.Message, null, CLASS_TYPE.Name);
+                FLog.Error(CLASS_TYPE.Name, exception.Message);
+
+                return default;
+            }
+        }
+
+        public static T GetAttributeProperty<T>(Type classType, Type attributeType, string propertyName)
+        {
+            FAssert.IsNotNull(classType);
+            FAssert.IsNotNull(attributeType);
+            FAssert.IsFalse(string.IsNullOrEmpty(propertyName));
+            FAssert.IsTrue(attributeType.IsSubclassOf(typeof(Attribute)));
+
+            FAssert.IsTrue(HasDefinedAttribute(classType, attributeType));
+
+            PropertyInfo propertyInfo = attributeType.GetProperty(propertyName, BINDING_FLAGS);
+
+            FAssert.IsNotNull(propertyInfo);
+
+            try
+            {
+                return (T)propertyInfo.GetValue(classType.GetCustomAttribute(attributeType));
+            }
+            catch (InvalidCastException exception)
+            {
+                FLog.Error(CLASS_TYPE.Name, exception.Message);
 
                 return default;
             }
@@ -175,33 +154,15 @@ namespace DreamMachineGameStudio.Dreamworks.Utility
         /// <param name="value">Desire value for given property.</param>
         public static void SetProperty(object instance, string propertyName, object value)
         {
-            if (instance == null)
-            {
-                FLog.LogError("Instance should not be null.", null, CLASS_TYPE.Name);
-                return;
-            }
-
-            if (string.IsNullOrEmpty(propertyName))
-            {
-                FLog.LogError("Property name should not be null or empty.", null, CLASS_TYPE.Name);
-                return;
-            }
+            FAssert.IsNotNull(instance);
+            FAssert.IsFalse(string.IsNullOrEmpty(propertyName));
 
             Type instanceType = instance.GetType();
 
-            PropertyInfo propertyInfo = instanceType.GetProperty(propertyName, bindingFlags);
+            PropertyInfo propertyInfo = instanceType.GetProperty(propertyName, BINDING_FLAGS);
 
-            if (propertyInfo == null)
-            {
-                FLog.LogError($"{propertyName} property doesn't exist in {instanceType.Name} class.", null, CLASS_TYPE.Name);
-                return;
-            }
-
-            if (propertyInfo.PropertyType.IsAssignableFrom(value.GetType()) == false)
-            {
-                FLog.LogError($"Can not assign {value.GetType().Name} type to {propertyInfo.PropertyType.Name} type.", null, CLASS_TYPE.Name);
-                return;
-            }
+            FAssert.IsNotNull(propertyInfo);
+            FAssert.IsTrue(propertyInfo.PropertyType.IsAssignableFrom(value.GetType()));
 
             if (propertyInfo.CanWrite)
             {
@@ -211,13 +172,9 @@ namespace DreamMachineGameStudio.Dreamworks.Utility
 
             Type DeclaringType = propertyInfo.DeclaringType;
 
-            PropertyInfo declaringPropertyInfo = DeclaringType.GetProperty(propertyName, bindingFlags);
+            PropertyInfo declaringPropertyInfo = DeclaringType.GetProperty(propertyName, BINDING_FLAGS);
 
-            if (declaringPropertyInfo == null)
-            {
-                FLog.LogError($"Unexpected Error", null, CLASS_TYPE.Name);
-                return;
-            }
+            FAssert.IsNotNull(declaringPropertyInfo);
 
             try
             {
@@ -225,7 +182,7 @@ namespace DreamMachineGameStudio.Dreamworks.Utility
             }
             catch (Exception exception)
             {
-                FLog.LogError(exception.Message, null, CLASS_TYPE.Name);
+                FLog.Error(CLASS_TYPE.Name, exception.Message);
             }
         }
 
@@ -237,29 +194,11 @@ namespace DreamMachineGameStudio.Dreamworks.Utility
         /// <param name="value">Desire value for given property.</param>
         public static void SetProperty(object instance, PropertyInfo propertyInfo, object value)
         {
-            if (instance == null)
-            {
-                FLog.LogError($"Instance should not be null.", null, CLASS_TYPE.Name);
-                return;
-            }
+            FAssert.IsNotNull(instance);
+            FAssert.IsNotNull(propertyInfo);
 
-            if (propertyInfo == null)
-            {
-                FLog.LogError($"Property info should not be null.", null, CLASS_TYPE.Name);
-                return;
-            }
-
-            if (propertyInfo.DeclaringType != instance.GetType())
-            {
-                FLog.LogError($"{propertyInfo.Name} property doesn't belong to {instance.GetType().Name} type.", null, CLASS_TYPE.Name);
-                return;
-            }
-
-            if (propertyInfo.PropertyType.IsAssignableFrom(value.GetType()) == false)
-            {
-                FLog.LogError($"Can not assign {value.GetType().Name} type to {propertyInfo.PropertyType.Name} type.", null, CLASS_TYPE.Name);
-                return;
-            }
+            FAssert.AreEqual(propertyInfo.DeclaringType, instance.GetType());
+            FAssert.IsTrue(propertyInfo.PropertyType.IsAssignableFrom(value.GetType()));
 
             if (propertyInfo.CanWrite)
             {
@@ -269,13 +208,9 @@ namespace DreamMachineGameStudio.Dreamworks.Utility
 
             Type DeclaringType = propertyInfo.DeclaringType;
 
-            PropertyInfo declaringPropertyInfo = DeclaringType.GetProperty(propertyInfo.Name, bindingFlags);
+            PropertyInfo declaringPropertyInfo = DeclaringType.GetProperty(propertyInfo.Name, BINDING_FLAGS);
 
-            if (declaringPropertyInfo == null)
-            {
-                FLog.LogError($"{propertyInfo} dose not exist in {instance.GetType().Name} class.", null, CLASS_TYPE.Name);
-                return;
-            }
+            FAssert.IsNotNull(declaringPropertyInfo);
 
             try
             {
@@ -283,7 +218,7 @@ namespace DreamMachineGameStudio.Dreamworks.Utility
             }
             catch (Exception exception)
             {
-                FLog.LogError(exception.Message, null, CLASS_TYPE.Name);
+                FLog.Error(CLASS_TYPE.Name, exception.Message);
             }
         }
 
@@ -295,27 +230,14 @@ namespace DreamMachineGameStudio.Dreamworks.Utility
         /// <param name="value">Desire value for given property.</param>
         public static void SetField(object instance, string fieldName, object value)
         {
-            if (instance == null)
-            {
-                FLog.LogError($"Instance parameter is null, it is not accepted.", null, CLASS_TYPE.Name);
-                return;
-            }
-
-            if (string.IsNullOrEmpty(fieldName))
-            {
-                FLog.LogError($"Property name parameter is null, it is not accepted.", null, CLASS_TYPE.Name);
-                return;
-            }
+            FAssert.IsNotNull(instance);
+            FAssert.IsFalse(string.IsNullOrEmpty(fieldName));
 
             Type instanceType = instance.GetType();
 
-            FieldInfo fieldInfo = instanceType.GetField(fieldName, bindingFlags);
+            FieldInfo fieldInfo = instanceType.GetField(fieldName, BINDING_FLAGS);
 
-            if (fieldInfo == null)
-            {
-                FLog.LogError($"{fieldName} dose not exist in {instanceType.Name} class.", null, CLASS_TYPE.Name);
-                return;
-            }
+            FAssert.IsNotNull(fieldInfo);
 
             try
             {
@@ -323,7 +245,7 @@ namespace DreamMachineGameStudio.Dreamworks.Utility
             }
             catch (Exception exception)
             {
-                FLog.LogError(exception.Message, null, CLASS_TYPE.Name);
+                FLog.Error(CLASS_TYPE.Name, exception.Message);
             }
         }
 
@@ -335,17 +257,8 @@ namespace DreamMachineGameStudio.Dreamworks.Utility
         /// <param name="value">Desire value for given property.</param>
         public static void SetField(object instance, FieldInfo fieldInfo, object value)
         {
-            if (instance == null)
-            {
-                FLog.LogError($"Instance parameter is null, it is not accepted.", null, CLASS_TYPE.Name);
-                return;
-            }
-
-            if (fieldInfo == null)
-            {
-                FLog.LogError($"Property name parameter is null, it is not accepted.", null, CLASS_TYPE.Name);
-                return;
-            }
+            FAssert.IsNotNull(instance);
+            FAssert.IsNotNull(fieldInfo);
 
             try
             {
@@ -353,7 +266,7 @@ namespace DreamMachineGameStudio.Dreamworks.Utility
             }
             catch (Exception exception)
             {
-                FLog.LogError(exception.Message, null, CLASS_TYPE.Name);
+                FLog.Error(CLASS_TYPE.Name, exception.Message);
             }
         }
 
@@ -364,7 +277,7 @@ namespace DreamMachineGameStudio.Dreamworks.Utility
         {
             Type type = obj.GetType();
 
-            return type.GetProperties(bindingFlags);
+            return type.GetProperties(BINDING_FLAGS);
         }
 
         /// <summary>
@@ -374,7 +287,14 @@ namespace DreamMachineGameStudio.Dreamworks.Utility
         {
             Type type = obj.GetType();
 
-            return type.GetFields(bindingFlags);
+            return type.GetFields(BINDING_FLAGS);
+        }
+
+        public static FieldInfo GetField(object obj, string fieldName)
+        {
+            Type type = obj.GetType();
+
+            return type.GetField(fieldName, BINDING_FLAGS);
         }
 
         /// <summary>

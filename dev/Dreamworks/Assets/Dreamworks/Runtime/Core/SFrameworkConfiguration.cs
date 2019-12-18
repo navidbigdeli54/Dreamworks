@@ -12,7 +12,7 @@ namespace DreamMachineGameStudio.Dreamworks.Core
     /// </summary>
     /// <Author>Navid Bigdeli</Author>
     /// <CreationDate>February/5/2019</CreationDate>
-    [TScriptableObjectWizard]
+    [AScriptableObjectWizard]
     public class SFrameworkConfiguration : SScriptableObject
     {
         #region Field

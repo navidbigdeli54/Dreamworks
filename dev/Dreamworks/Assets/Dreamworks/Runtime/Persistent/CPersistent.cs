@@ -15,8 +15,8 @@ namespace DreamMachineGameStudio.Dreamworks.Persistent
     [DisallowMultipleComponent]
     public class CPersistent : MonoBehaviour
     {
-        #region Property
-        public static Type CLASS_TYPE { get; } = typeof(CPersistent);
+        #region Fields
+        public readonly static Type CLASS_TYPE = typeof(CPersistent);
         #endregion
 
         #region MonoBehaviours
@@ -42,13 +42,13 @@ namespace DreamMachineGameStudio.Dreamworks.Persistent
         {
             if (gameObject == null)
             {
-                FLog.LogError($"Given game object to making it persistent is null. it is not accepted.", null, CLASS_TYPE.Name);
+                FLog.Error(CLASS_TYPE.Name, $"Given game object to making it persistent is null. it is not accepted.");
                 return;
             }
 
             if (gameObject.GetComponent<CPersistent>() != null)
             {
-                FLog.LogWarning($"`{gameObject.name}` has marked as persistent already.", null, CLASS_TYPE.Name);
+                FLog.Warning(CLASS_TYPE.Name, $"`{gameObject.name}` has marked as persistent already.");
                 return;
             }
 
@@ -63,7 +63,7 @@ namespace DreamMachineGameStudio.Dreamworks.Persistent
         {
             if (gameObject == null)
             {
-                FLog.LogError($"Given game object to making it persistent is null. it is not accepted.", null, CLASS_TYPE.Name);
+                FLog.Error(CLASS_TYPE.Name, $"Given game object to making it persistent is null. it is not accepted.");
                 return;
             }
 
@@ -71,7 +71,7 @@ namespace DreamMachineGameStudio.Dreamworks.Persistent
 
             if (component == null)
             {
-                FLog.LogWarning($"`{gameObject.name}` has marked as transient already.", null, CLASS_TYPE.Name);
+                FLog.Warning(CLASS_TYPE.Name, $"`{gameObject.name}` has marked as transient already.");
                 return;
             }
 

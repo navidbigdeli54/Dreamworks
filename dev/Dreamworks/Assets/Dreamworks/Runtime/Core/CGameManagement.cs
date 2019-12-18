@@ -5,8 +5,7 @@ using UnityEngine;
 using System.Threading.Tasks;
 using DreamMachineGameStudio.Dreamworks.Debug;
 using DreamMachineGameStudio.Dreamworks.Utility;
-using DreamMachineGameStudio.Dreamworks.ServiceLocator;
-using DreamMachineGameStudio.Dreamworks.EventManagement;
+using DreamMachineGameStudio.Dreamworks.EventManager;
 using DreamMachineGameStudio.Dreamworks.SceneManagement;
 
 namespace DreamMachineGameStudio.Dreamworks.Core
@@ -15,10 +14,6 @@ namespace DreamMachineGameStudio.Dreamworks.Core
     /// <CreationDate>January/31/2018</CreationDate>
     public abstract class CGameManagement : CComponent, IGameManagement
     {
-        #region Field
-        private IEventManagement eventManagement;
-        #endregion
-
         #region Property
         public new static Type CLASS_TYPE => typeof(CGameManagement);
 
@@ -32,10 +27,8 @@ namespace DreamMachineGameStudio.Dreamworks.Core
 
             MakePersistent();
 
-            eventManagement = FServiceLocator.Resolve<IEventManagement>();
-
-            eventManagement.Subscribe(FDefaultEventNameHelper.ON_SCENE_LOADED, OnSceneLoaded);
-            eventManagement.Subscribe(FDefaultEventNameHelper.ON_SCENE_UNLOADED, OnSceneUnloaded);
+            FEventManager.Subscribe(FDefaultEventNameHelper.ON_SCENE_LOADED, OnSceneLoaded);
+            FEventManager.Subscribe(FDefaultEventNameHelper.ON_SCENE_UNLOADED, OnSceneUnloaded);
         }
 
         protected override void TickComponent(float deltaTime)
@@ -87,11 +80,11 @@ namespace DreamMachineGameStudio.Dreamworks.Core
 
             if (metadata == null)
             {
-                FLog.LogWarning($"Cannot find scene metadata `S{eventArg.Scene.name}`", null, CLASS_TYPE.Name);
+                FLog.Warning(CLASS_TYPE.Name, $"Cannot find scene metadata `S{eventArg.Scene.name}`");
             }
             else if (string.IsNullOrEmpty(metadata.GameMode))
             {
-                FLog.LogWarning($"GameMode is not sat for this level.", null, CLASS_TYPE.Name);
+                FLog.Warning(CLASS_TYPE.Name, $"GameMode is not sat for this level.");
             }
             else
             {
@@ -101,7 +94,7 @@ namespace DreamMachineGameStudio.Dreamworks.Core
                 await CurrentGameMode?.InitializeAsync();
                 await CurrentGameMode?.BeginPlayAsync();
 
-                eventManagement.Publish(FDefaultEventNameHelper.ON_GAME_MODE_LOADED);
+                FEventManager.Publish(FDefaultEventNameHelper.ON_GAME_MODE_LOADED);
             }
         }
 

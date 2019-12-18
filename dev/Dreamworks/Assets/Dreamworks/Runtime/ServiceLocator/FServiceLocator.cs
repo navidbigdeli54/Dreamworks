@@ -2,7 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-using DreamMachineGameStudio.Dreamworks.Core;
 using DreamMachineGameStudio.Dreamworks.Debug;
 
 namespace DreamMachineGameStudio.Dreamworks.ServiceLocator
@@ -15,48 +14,35 @@ namespace DreamMachineGameStudio.Dreamworks.ServiceLocator
     /// <CreationDate>January/14/2019</CreationDate>
     public static class FServiceLocator
     {
-        #region Field
+        #region Fields
+        public readonly static Type CLASS_TYPE = typeof(FServiceLocator);
+
         private readonly static IDictionary<Type, object> registeredServices = new Dictionary<Type, object>();
         #endregion
 
-        #region Property
-        public static Type CLASS_TYPE { get; } = typeof(FServiceLocator);
+        #region Properties
+        public static IReadOnlyDictionary<Type, object> RegisteredServices => registeredServices as IReadOnlyDictionary<Type, object>;
         #endregion
 
-        #region IServiceLocator Implementation
+        #region Methods
         /// <summary>
         /// Register a service with given instance as singleton in ServiceLocator.
         /// </summary>
         /// <typeparam name="TService">Service type</typeparam>
         /// <param name="service">Service instance</param>
-        public static void Register<TService>(object service) where TService : class, IService
+        public static void Register<TService>(object service) where TService : class
         {
-            if (service == null)
-            {
-                FLog.LogError("Service instance can't be null.", null, CLASS_TYPE.Name);
+            FAssert.IsNotNull(service, "Service instance can't be null.");
 
-                return;
-            }
-
-            if ((service as TService) == null)
-            {
-                FLog.LogError($"`{service.GetType().Name}` Service instance doesn't implemented `{typeof(TService).Name}` interface.", null, CLASS_TYPE.Name);
-
-                return;
-            }
+            FAssert.IsNotNull(service as TService, $"`{service.GetType().Name}` Service instance doesn't implemented `{typeof(TService).Name}` interface.");
 
             Type serviceType = typeof(TService);
 
-            if (registeredServices.ContainsKey(serviceType) == true)
-            {
-                FLog.LogWarning($"`{service.GetType().Name}` service is already registered.", null, CLASS_TYPE.Name);
-
-                return;
-            }
+            FAssert.IsFalse(registeredServices.ContainsKey(serviceType), $"`{service.GetType().Name}` service is already registered.");
 
             registeredServices.Add(serviceType, service);
 
-            FLog.Log($"`{service.GetType().Name}` service has been registered.", null, CLASS_TYPE.Name);
+            FLog.Log(CLASS_TYPE.Name, $"`{serviceType.Name}` service has been registered. Service instance is `{service.GetType().Name}`.");
         }
 
         /// <summary>
@@ -64,16 +50,18 @@ namespace DreamMachineGameStudio.Dreamworks.ServiceLocator
         /// </summary>
         /// <typeparam name="TService">ServiceType</typeparam>
         /// <returns>Service instance of given type</returns>
-        public static TService Resolve<TService>() where TService : class, IService
+        public static TService Get<TService>() where TService : class
         {
             Type serviceType = typeof(TService);
+
+            FAssert.IsTrue(registeredServices.ContainsKey(serviceType), $"{serviceType.Name} service does not exist.");
 
             return registeredServices[serviceType] as TService;
         }
 
-        public static void Remove<T>()
+        public static void Remove<TService>() where TService : class
         {
-            Remove(typeof(T));
+            Remove(typeof(TService));
         }
 
         public static void Remove(Type serviceType)

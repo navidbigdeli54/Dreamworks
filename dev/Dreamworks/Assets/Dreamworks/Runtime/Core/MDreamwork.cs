@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using DreamMachineGameStudio.Dreamworks.Debug;
 using DreamMachineGameStudio.Dreamworks.Persistent;
-using DreamMachineGameStudio.Dreamworks.EventManagement;
+using DreamMachineGameStudio.Dreamworks.EventManager;
 using DreamMachineGameStudio.Dreamworks.ServiceLocator;
 
 namespace DreamMachineGameStudio.Dreamworks.Core
@@ -88,7 +88,7 @@ namespace DreamMachineGameStudio.Dreamworks.Core
                 }
                 catch (Exception exception)
                 {
-                    FLog.LogError(exception.Message, this, CLASS_TYPE.Name);
+                    FLog.Error(CLASS_TYPE.Name, exception.Message);
                 }
             }
         }
@@ -117,7 +117,7 @@ namespace DreamMachineGameStudio.Dreamworks.Core
                 }
                 catch (Exception exception)
                 {
-                    FLog.LogError(exception.Message, this, CLASS_TYPE.Name);
+                    FLog.Error(CLASS_TYPE.Name, exception.Message);
                 }
             }
         }
@@ -146,7 +146,7 @@ namespace DreamMachineGameStudio.Dreamworks.Core
                 }
                 catch (Exception exception)
                 {
-                    FLog.LogError(exception.Message, null, CLASS_TYPE.Name);
+                    FLog.Error(CLASS_TYPE.Name, exception.Message);
                 }
             }
         }
@@ -157,18 +157,16 @@ namespace DreamMachineGameStudio.Dreamworks.Core
         {
             await InitializeServicesAsync();
 
-            IEventManagement eventManagement = FServiceLocator.Resolve<IEventManagement>();
+            FEventManager.Subscribe(FDefaultEventNameHelper.ON_GAME_MODE_LOADED, OnGameModeLoaded);
 
-            eventManagement.Subscribe(FDefaultEventNameHelper.ON_GAME_MODE_LOADED, OnGameModeLoaded);
-
-            eventManagement.Subscribe(FDefaultEventNameHelper.ON_SCENE_UNLOADED, OnSceneUnloaded);
+            FEventManager.Subscribe(FDefaultEventNameHelper.ON_SCENE_UNLOADED, OnSceneUnloaded);
         }
 
         public async Task RegisterAsycn(IInitializable initializable)
         {
             if (initializablesHolder.Contains(initializable))
             {
-                FLog.LogWarning($"{initializable.Name} has already registered", this, CLASS_TYPE.Name);
+                FLog.Warning(CLASS_TYPE.Name, $"{initializable.Name} has already registered");
 
                 return;
             }
@@ -188,7 +186,7 @@ namespace DreamMachineGameStudio.Dreamworks.Core
             {
                 if (initializable is IService && (initializable is IGameService) == false)
                 {
-                    FLog.LogError($"{initializable.Name} is a service and should not be registered during game play, use GameStartup to register them. Registration aborted.");
+                    FLog.Error(CLASS_TYPE.Name, $"{initializable.Name} is a service and should not be registered during game play, use GameStartup to register them. Registration aborted.");
 
                     return;
                 }
@@ -207,7 +205,7 @@ namespace DreamMachineGameStudio.Dreamworks.Core
         {
             if (initializablesHolder.Contains(initializable) == false)
             {
-                FLog.LogWarning($"{initializable.Name} has not registered but wants to unregister itself.", this, CLASS_TYPE.Name);
+                FLog.Warning(CLASS_TYPE.Name, $"{initializable.Name} has not registered but wants to unregister itself.");
 
                 return;
             }
@@ -235,7 +233,7 @@ namespace DreamMachineGameStudio.Dreamworks.Core
         {
             if (ticksHolder.Contains(tickable))
             {
-                FLog.LogWarning($"{tickable.Name} already registered for tick.", this, CLASS_TYPE.Name);
+                FLog.Warning(CLASS_TYPE.Name, $"{tickable.Name} already registered for tick.");
 
                 return;
             }
@@ -249,7 +247,7 @@ namespace DreamMachineGameStudio.Dreamworks.Core
         {
             if (ticksHolder.Contains(tickable) == false)
             {
-                FLog.LogWarning($"{tickable.Name} has not registered for tick but wants to unregister.", this, CLASS_TYPE.Name);
+                FLog.Warning(CLASS_TYPE.Name, $"{tickable.Name} has not registered for tick but wants to unregister.");
 
                 return;
             }
@@ -263,7 +261,7 @@ namespace DreamMachineGameStudio.Dreamworks.Core
         {
             if (lateTicksHolder.Contains(tickable))
             {
-                FLog.LogWarning($"{tickable.Name} already registered for late tick.", this, CLASS_TYPE.Name);
+                FLog.Warning(CLASS_TYPE.Name, $"{tickable.Name} already registered for late tick.");
 
                 return;
             }
@@ -277,7 +275,7 @@ namespace DreamMachineGameStudio.Dreamworks.Core
         {
             if (lateTicksHolder.Contains(tickable) == false)
             {
-                FLog.LogWarning($"{tickable.Name} has not registered for late tick but wants to unregister.", this, CLASS_TYPE.Name);
+                FLog.Warning(CLASS_TYPE.Name, $"{tickable.Name} has not registered for late tick but wants to unregister.");
 
                 return;
             }
@@ -291,7 +289,7 @@ namespace DreamMachineGameStudio.Dreamworks.Core
         {
             if (fixedTicksHolder.Contains(tickable))
             {
-                FLog.LogWarning($"{tickable.Name} already registered for fixed tick.", this, CLASS_TYPE.Name);
+                FLog.Warning(CLASS_TYPE.Name, $"{tickable.Name} already registered for fixed tick.");
 
                 return;
             }
@@ -305,7 +303,7 @@ namespace DreamMachineGameStudio.Dreamworks.Core
         {
             if (fixedTicksHolder.Contains(tickable) == false)
             {
-                FLog.LogWarning($"{tickable.Name} has not registered for fixed tick but wants to unregister.", this, CLASS_TYPE.Name);
+                FLog.Warning(CLASS_TYPE.Name, $"{tickable.Name} has not registered for fixed tick but wants to unregister.");
 
                 return;
             }
@@ -347,7 +345,7 @@ namespace DreamMachineGameStudio.Dreamworks.Core
                 }
                 catch (Exception exception)
                 {
-                    FLog.LogError(exception, this, CLASS_TYPE.Name);
+                    FLog.Error(CLASS_TYPE.Name, exception);
                 }
             }
         }
@@ -368,7 +366,7 @@ namespace DreamMachineGameStudio.Dreamworks.Core
                 }
                 catch (Exception exception)
                 {
-                    FLog.LogError(exception, this, CLASS_TYPE.Name);
+                    FLog.Error(CLASS_TYPE.Name, exception);
                 }
             }
         }
@@ -389,7 +387,7 @@ namespace DreamMachineGameStudio.Dreamworks.Core
                 }
                 catch (Exception exception)
                 {
-                    FLog.LogError(exception, this, CLASS_TYPE.Name);
+                    FLog.Error(CLASS_TYPE.Name, exception);
                 }
             }
         }

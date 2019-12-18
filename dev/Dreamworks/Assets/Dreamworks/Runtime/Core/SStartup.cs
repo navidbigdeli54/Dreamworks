@@ -2,7 +2,6 @@
 
 using UnityEngine;
 using DreamMachineGameStudio.Dreamworks.ServiceLocator;
-using DreamMachineGameStudio.Dreamworks.EventManagement;
 using DreamMachineGameStudio.Dreamworks.SceneManagement;
 
 namespace DreamMachineGameStudio.Dreamworks.Core
@@ -34,8 +33,6 @@ namespace DreamMachineGameStudio.Dreamworks.Core
             }
 
             new GameObject().AddComponent<MDreamwork>();
-
-            FServiceLocator.Register<IEventManagement>(new GameObject().AddComponent<CEventManagement>());
 
             FServiceLocator.Register<ISceneManagement>(new GameObject().AddComponent<CSceneManagement>());
 

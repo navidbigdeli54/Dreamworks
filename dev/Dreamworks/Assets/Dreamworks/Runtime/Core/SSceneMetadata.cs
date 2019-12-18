@@ -9,7 +9,7 @@ namespace DreamMachineGameStudio.Dreamworks.Core
 {
     /// <Author>Navid Bigdeli</Author>
     /// <CreationDate>June/24/2018</CreationDate>
-    [TScriptableObjectWizard]
+    [AScriptableObjectWizard]
     public class SSceneMetadata : SScriptableObject
     {
         #region Field
