@@ -76,19 +76,19 @@ namespace DreamMachineGameStudio.Dreamworks.Core
         {
             FSceneLoadedEventArg eventArg = (FSceneLoadedEventArg)arg;
 
-            SSceneMetadata metadata = Resources.Load<SSceneMetadata>($"S{eventArg.Scene.name}");
+            CLevelConfig metadata = FindObjectOfType<CLevelConfig>();
 
             if (metadata == null)
             {
                 FLog.Warning(CLASS_TYPE.Name, $"Cannot find scene metadata `S{eventArg.Scene.name}`");
             }
-            else if (string.IsNullOrEmpty(metadata.GameMode))
+            else if (metadata.GameMode == null)
             {
                 FLog.Warning(CLASS_TYPE.Name, $"GameMode is not sat for this level.");
             }
             else
             {
-                CurrentGameMode = Activator.CreateInstance(FReflectionUtility.GetType(metadata.GameMode)) as IGameMode;
+                CurrentGameMode = Activator.CreateInstance(FReflectionUtility.GetType(metadata.GameMode.FullName)) as IGameMode;
 
                 await CurrentGameMode?.PreInitializeAsync();
                 await CurrentGameMode?.InitializeAsync();

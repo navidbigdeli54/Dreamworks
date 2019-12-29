@@ -7,7 +7,6 @@ using UnityEditor;
 using System.Collections.Generic;
 using DreamMachineGameStudio.Dreamworks.Core;
 using DreamMachineGameStudio.Dreamworks.Utility;
-using DreamMachineGameStudio.Dreamworks.Attributes;
 
 namespace DreamMachineGameStudio.Dreamworks.Editor
 {

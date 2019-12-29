@@ -3,7 +3,6 @@
 #pragma warning disable IDE0044 // Add readonly modifier
 
 using UnityEngine;
-using DreamMachineGameStudio.Dreamworks.Attributes;
 
 namespace DreamMachineGameStudio.Dreamworks.Core
 {
