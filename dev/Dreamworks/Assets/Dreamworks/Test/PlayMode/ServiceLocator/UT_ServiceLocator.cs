@@ -3,9 +3,9 @@
 using UnityEngine;
 using NUnit.Framework;
 using UnityEngine.TestTools;
+using System.Text.RegularExpressions;
 using DreamMachineGameStudio.Dreamworks.ServiceLocator;
 using DreamMachineGameStudio.Dreamworks.Test.Dummy.ServiceLocator;
-using System.Text.RegularExpressions;
 
 namespace DreamMachineGameStudio.Dreamworks.Test.ServiceLocator
 {
@@ -34,7 +34,7 @@ namespace DreamMachineGameStudio.Dreamworks.Test.ServiceLocator
         public void Register_Service_Twice_Test()
         {
             FServiceLocator.Register<IDummyService>(new GameObject(nameof(CDummyService)).AddComponent<CDummyService>());
-            CDummyService service = FServiceLocator.Resolve<IDummyService>() as CDummyService;
+            CDummyService service = FServiceLocator.Get<IDummyService>() as CDummyService;
             Assert.IsNotNull(service);
 
             LogAssert.Expect(LogType.Warning, new Regex("service is already registered."));
@@ -47,7 +47,7 @@ namespace DreamMachineGameStudio.Dreamworks.Test.ServiceLocator
             LogAssert.Expect(LogType.Log, new Regex("service has been registered."));
             FServiceLocator.Register<IDummyService>(new GameObject(nameof(CDummyService)).AddComponent<CDummyService>());
 
-            CDummyService service = FServiceLocator.Resolve<IDummyService>() as CDummyService;
+            CDummyService service = FServiceLocator.Get<IDummyService>() as CDummyService;
             Assert.IsNotNull(service);
         }
     }

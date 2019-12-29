@@ -3,7 +3,6 @@
 #pragma warning disable IDE0044 // Add readonly modifier
 
 using UnityEngine;
-using DreamMachineGameStudio.Dreamworks.Attributes;
 
 namespace DreamMachineGameStudio.Dreamworks.Core
 {
@@ -12,7 +11,7 @@ namespace DreamMachineGameStudio.Dreamworks.Core
     /// </summary>
     /// <Author>Navid Bigdeli</Author>
     /// <CreationDate>February/5/2019</CreationDate>
-    [TScriptableObjectWizard]
+    [AScriptableObjectWizard]
     public class SFrameworkConfiguration : SScriptableObject
     {
         #region Field

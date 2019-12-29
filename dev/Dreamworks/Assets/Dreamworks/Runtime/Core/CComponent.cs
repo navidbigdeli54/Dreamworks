@@ -16,7 +16,9 @@ namespace DreamMachineGameStudio.Dreamworks.Core
     {
         #region Field
         private bool canEverTick = false;
+
         private bool canEverLateTick = false;
+
         private bool canEverFixedTick = false;
         #endregion
 
@@ -81,6 +83,8 @@ namespace DreamMachineGameStudio.Dreamworks.Core
         private async Task Awake()
         {
             CachedTransform = GetComponent<Transform>();
+
+            transform.position = new Vector3();
 
             await MDreamwork.Instance.RegisterAsycn(this);
 
@@ -230,25 +234,25 @@ namespace DreamMachineGameStudio.Dreamworks.Core
 
         string INameable.Name => name;
 
-        async Task IInitializable.PreInitializeAsync() => await PreInitializeComponenetAsync();
+        async Task IPureInitializable.PreInitializeAsync() => await PreInitializeComponenetAsync();
 
-        async Task IInitializable.InitializeAsync()
+        async Task IPureInitializable.InitializeAsync()
         {
             await InitializeComponentAsync();
 
             HasInitialized = true;
         }
 
-        async Task IInitializable.BeginPlayAsync()
+        async Task IPureInitializable.BeginPlayAsync()
         {
             await BeginPlayAsync();
 
             HasBeganPlay = true;
         }
 
-        async Task IInitializable.UninitializeAsync() => await UninitializeCompoonentAsync();
+        async Task IPureInitializable.UninitializeAsync() => await UninitializeCompoonentAsync();
 
-        void ITickable.Tick(float deltaTime)
+        void IPureTickable.Tick(float deltaTime)
         {
             if (gameObject.activeInHierarchy == false) return;
 
@@ -259,7 +263,7 @@ namespace DreamMachineGameStudio.Dreamworks.Core
             TickComponent(deltaTime);
         }
 
-        void ITickable.LateTick(float deltaTime)
+        void IPureTickable.LateTick(float deltaTime)
         {
             if (gameObject.activeInHierarchy == false) return;
 
@@ -270,7 +274,7 @@ namespace DreamMachineGameStudio.Dreamworks.Core
             LateTickComponent(deltaTime);
         }
 
-        void ITickable.FixedTick(float deltaTime)
+        void IPureTickable.FixedTick(float deltaTime)
         {
             if (gameObject.activeInHierarchy == false) return;
 

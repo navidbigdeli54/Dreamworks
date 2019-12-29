@@ -7,7 +7,6 @@ using UnityEditor;
 using System.Collections.Generic;
 using DreamMachineGameStudio.Dreamworks.Core;
 using DreamMachineGameStudio.Dreamworks.Utility;
-using DreamMachineGameStudio.Dreamworks.Attributes;
 
 namespace DreamMachineGameStudio.Dreamworks.Editor
 {
@@ -40,7 +39,7 @@ namespace DreamMachineGameStudio.Dreamworks.Editor
         #region EditorWindow Methods
         private void OnEnable()
         {
-            scriptableObjectTypes = FReflectionUtility.GetSubTypesOf<SScriptableObject>().Where(x => FReflectionUtility.HasDefinedAttribute(x, typeof(TScriptableObjectWizard)));
+            scriptableObjectTypes = FReflectionUtility.GetSubTypesOf<SScriptableObject>().Where(x => FReflectionUtility.HasDefinedAttribute(x, typeof(AScriptableObjectWizard)));
 
             scriptableObjectNames = scriptableObjectTypes.Select(row => row.Name).ToArray();
         }

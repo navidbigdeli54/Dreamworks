@@ -1,0 +1,15 @@
+{
+    "name": "DreamMachineGameStudio.EventManager.Editor",
+    "references": [
+        "GUID:f7f1960c3bffcec4cb440c2f128a380a"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

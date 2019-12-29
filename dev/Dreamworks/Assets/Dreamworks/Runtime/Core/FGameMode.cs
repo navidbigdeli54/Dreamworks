@@ -66,29 +66,29 @@ namespace DreamMachineGameStudio.Dreamworks.Core
 
         bool ITickable.CanFixedTickBeforePlay => CanFixedTickBeforePlay;
 
-        async Task IInitializable.PreInitializeAsync() => await PreInitializeAsync();
+        async Task IPureInitializable.PreInitializeAsync() => await PreInitializeAsync();
 
-        async Task IInitializable.InitializeAsync()
+        async Task IPureInitializable.InitializeAsync()
         {
             await InitializeAsync();
 
             HasInitialized = true;
         }
 
-        async Task IInitializable.BeginPlayAsync()
+        async Task IPureInitializable.BeginPlayAsync()
         {
             await BeginPlayAsync();
 
             HasBeganPlay = true;
         }
 
-        async Task IInitializable.UninitializeAsync() => await UninitializeAsync();
+        async Task IPureInitializable.UninitializeAsync() => await UninitializeAsync();
 
-        void ITickable.Tick(float deltaTime) => Tick(deltaTime);
+        void IPureTickable.Tick(float deltaTime) => Tick(deltaTime);
 
-        void ITickable.LateTick(float deltaTime) => LateTick(deltaTime);
+        void IPureTickable.LateTick(float deltaTime) => LateTick(deltaTime);
 
-        void ITickable.FixedTick(float deltaTime) => FixedTick(deltaTime);
+        void IPureTickable.FixedTick(float deltaTime) => FixedTick(deltaTime);
         #endregion
     }
 }
