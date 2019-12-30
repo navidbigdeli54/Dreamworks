@@ -12,6 +12,10 @@ namespace DreamMachineGameStudio.Dreamworks.Core
     [AttributeUsage(AttributeTargets.All)]
     public class AName : Attribute
     {
+        #region Fields
+        public static Type CLASS_TYPE = typeof(AName);
+        #endregion
+
         #region Properties
         public string Name { get; }
         #endregion
