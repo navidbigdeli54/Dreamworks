@@ -11,7 +11,7 @@ namespace DreamMachineGameStudio.Dreamworks.Core
     /// </summary>
     /// <Author>Navid Bigdeli</Author>
     /// <CreationDate>February/5/2019</CreationDate>
-    [AScriptableObjectWizard]
+    [AScriptableObjectWizard("Framework Configuration")]
     public class SFrameworkConfiguration : SScriptableObject
     {
         #region Field
