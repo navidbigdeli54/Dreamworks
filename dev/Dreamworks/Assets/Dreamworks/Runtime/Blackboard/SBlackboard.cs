@@ -10,12 +10,10 @@ using DreamMachineGameStudio.Dreamworks.Debug;
 
 namespace DreamMachineGameStudio.Dreamworks.Blackboard
 {
+    [AScriptableObjectWizard("Blackboard")]
     public sealed class SBlackboard : SScriptableObject, ISerializationCallbackReceiver
     {
         #region Fields
-        [SerializeField]
-        private SBlackboard parent;
-
         private readonly Dictionary<string, SValue> blackboard = new Dictionary<string, SValue>(StringComparer.OrdinalIgnoreCase);
         #endregion
 
@@ -25,20 +23,6 @@ namespace DreamMachineGameStudio.Dreamworks.Blackboard
             FAssert.IsFalse(string.IsNullOrWhiteSpace(name), $"`name` parameter can't be null.");
 
             blackboard.TryGetValue(name, out SValue value);
-
-            if (value == null)
-            {
-                SBlackboard ancestor = parent;
-
-                while (ancestor != null)
-                {
-                    value = ancestor.GetValueSafe<T>(name);
-
-                    if (value != null) break;
-
-                    ancestor = ancestor.parent;
-                }
-            }
 
             return (T)value;
         }
