@@ -3,7 +3,6 @@
 using System;
 using UnityEngine;
 using DreamMachineGameStudio.Dreamworks.Debug;
-using DreamMachineGameStudio.Dreamworks.Utility;
 
 namespace DreamMachineGameStudio.Dreamworks.Core
 {
@@ -38,7 +37,7 @@ namespace DreamMachineGameStudio.Dreamworks.Core
                 return;
             }
 
-            Type startupType = FReflectionUtility.GetType(configuration.StartupClass);
+            Type startupType = configuration.StartupClass;
 
             if (startupType == null)
             {

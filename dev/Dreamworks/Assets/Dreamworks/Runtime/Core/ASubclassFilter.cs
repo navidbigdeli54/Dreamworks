@@ -8,10 +8,10 @@ namespace DreamMachineGameStudio.Dreamworks.Core
 {
     /// <Author>Navid Bigdeli</Author>
     /// <CreationDate>December/19/2019</CreationDate>
-    public class ATypeFilter : Attribute
+    public class ASubclassFilter : Attribute
     {
         #region Fields
-        public readonly static Type CLASS_TYPE = typeof(ATypeFilter);
+        public readonly static Type CLASS_TYPE = typeof(ASubclassFilter);
         #endregion
 
         #region Property
@@ -19,7 +19,7 @@ namespace DreamMachineGameStudio.Dreamworks.Core
         #endregion
 
         #region Constructor
-        public ATypeFilter(Type type)
+        public ASubclassFilter(Type type)
         {
             Type = type;
         }

@@ -12,12 +12,12 @@ namespace DreamMachineGameStudio.Dreamworks.Core
     {
         #region Fields
         [SerializeField]
-        [ATypeFilter(typeof(CComponent))]
-        private FType gameMode;
+        [ASubclassFilter(typeof(CComponent))]
+        private FSubclass gameMode;
         #endregion
 
         #region Properties
-        public FType GameMode => gameMode;
+        public FSubclass GameMode => gameMode;
         #endregion
     }
 }

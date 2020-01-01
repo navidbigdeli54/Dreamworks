@@ -12,8 +12,8 @@ namespace DreamMachineGameStudio.Dreamworks.Editor
 {
     /// <Author>Navid Bigdeli</Author>
     /// <CreationDate>December/18/2019</CreationDate>
-    [CustomPropertyDrawer(typeof(FType))]
-    public class UTypePropertyDrawer : PropertyDrawer
+    [CustomPropertyDrawer(typeof(FSubclass))]
+    public class USubclassPropertyDrawer : PropertyDrawer
     {
         #region Fields
         private string[] typeNames;
@@ -32,6 +32,8 @@ namespace DreamMachineGameStudio.Dreamworks.Editor
                 if (typeNames != null && typeNames.Length > 0)
                 {
                     selectedIndex = Array.IndexOf(typeNames, nameProperty.stringValue);
+
+                    if (selectedIndex == -1) selectedIndex = 0;
                 }
             }
 
@@ -50,10 +52,10 @@ namespace DreamMachineGameStudio.Dreamworks.Editor
         #region Private Methods
         private void CacheTypeNames()
         {
-            if (fieldInfo.IsDefined(ATypeFilter.CLASS_TYPE))
+            if (fieldInfo.IsDefined(ASubclassFilter.CLASS_TYPE))
             {
-                Attribute attribute = fieldInfo.GetCustomAttribute(ATypeFilter.CLASS_TYPE);
-                PropertyInfo typePropertyInfo = attribute.GetType().GetProperty(nameof(ATypeFilter.Type));
+                Attribute attribute = fieldInfo.GetCustomAttribute(ASubclassFilter.CLASS_TYPE);
+                PropertyInfo typePropertyInfo = attribute.GetType().GetProperty(nameof(ASubclassFilter.Type));
                 Type typeFilter = (Type)typePropertyInfo.GetValue(attribute);
                 typeNames = FReflectionUtility.GetSubTypesOf(typeFilter)?.Select(x => x.FullName).ToArray();
             }

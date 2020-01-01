@@ -16,17 +16,10 @@ namespace DreamMachineGameStudio.Dreamworks.Editor
     public class ULoaderConfiguration : UEditor
     {
         #region Field
-        private SerializedProperty startupClass;
-        private SerializedProperty dontLoadFramework;
-
-        private IEnumerable<Type> startupSubClasses;
-        private string[] startupSubClassesNames;
-
-        private int selectedIndex = 0;
+        private SerializedProperty startupClassProperty;
+        private SerializedProperty dontLoadFrameworkProperty;
 
         private bool foldout = true;
-
-        private readonly string SAVE_BUTTON_LABLE = "Save";
         #endregion
 
         #region Static Methods
@@ -40,13 +33,9 @@ namespace DreamMachineGameStudio.Dreamworks.Editor
         #region Method
         private void OnEnable()
         {
-            startupSubClasses = FReflectionUtility.GetSubTypesOf<SStartup>();
-            startupSubClassesNames = startupSubClasses?.Select(x => x.FullName).ToArray();
+            dontLoadFrameworkProperty = serializedObject.FindProperty("dontLoadFramework");
 
-            dontLoadFramework = serializedObject.FindProperty("dontLoadFramework");
-
-            startupClass = serializedObject.FindProperty("startupClass");
-            selectedIndex = Array.IndexOf(startupSubClassesNames, startupClass.stringValue);
+            startupClassProperty = serializedObject.FindProperty("startupClass");
         }
 
         public override void OnInspectorGUI()
@@ -57,22 +46,14 @@ namespace DreamMachineGameStudio.Dreamworks.Editor
             {
                 EditorGUILayout.BeginVertical(GUI.skin.box);
 
-                EditorGUILayout.PropertyField(dontLoadFramework);
+                EditorGUILayout.PropertyField(dontLoadFrameworkProperty);
 
-                selectedIndex = EditorGUILayout.Popup(startupClass.displayName, selectedIndex, startupSubClassesNames);
+                EditorGUILayout.PropertyField(startupClassProperty);
 
-                EditorGUILayout.Space();
-
-                if (GUILayout.Button(SAVE_BUTTON_LABLE, GUILayout.Height(20)))
-                {
-                    startupClass.stringValue = startupSubClassesNames[selectedIndex];
-
-                    serializedObject.ApplyModifiedProperties();
-                }
+                serializedObject.ApplyModifiedProperties();
 
                 EditorGUILayout.EndVertical();
             }
-
         }
         #endregion
     }
