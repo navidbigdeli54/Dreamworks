@@ -1,5 +1,7 @@
 ﻿/**Copyright 2016 - 2020, Dream Machine Game Studio. All Right Reserved.*/
 
+#pragma warning disable IDE0051
+
 using System;
 using UnityEngine;
 using System.Threading.Tasks;
@@ -15,6 +17,11 @@ namespace DreamMachineGameStudio.Dreamworks.Core
     public abstract class CComponent : MonoBehaviour, IFObject
     {
         #region Field
+        /// <summary>
+        /// Use this instance instead of Transform for the sake of performance.
+        /// </summary>
+        protected Transform CachedTransform;
+
         private bool canEverTick = false;
 
         private bool canEverLateTick = false;
@@ -72,11 +79,6 @@ namespace DreamMachineGameStudio.Dreamworks.Core
         /// If true, this component will get FixedTick beforeBeginPlay.
         /// </summary>
         protected bool CanFixedTickBeforePlay { get; set; } = false;
-
-        /// <summary>
-        /// Use this instance instead of Transform for the sake of performance.
-        /// </summary>
-        protected Transform CachedTransform { get; private set; }
         #endregion
 
         #region MonoBehaviour Methods
