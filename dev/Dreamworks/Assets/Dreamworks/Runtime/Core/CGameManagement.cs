@@ -88,7 +88,7 @@ namespace DreamMachineGameStudio.Dreamworks.Core
             }
             else
             {
-                CurrentGameMode = Activator.CreateInstance(FReflectionUtility.GetType(metadata.GameMode.FullName)) as IGameMode;
+                CurrentGameMode = Activator.CreateInstance(metadata.GameMode.Type) as IGameMode;
 
                 await CurrentGameMode?.PreInitializeAsync();
                 await CurrentGameMode?.InitializeAsync();

@@ -1,5 +1,5 @@
 {
-    "name": "DreamMachineGameStudio.Dreamworks.Editor",
+    "name": "DreamMachineGameStudio.Dreamworks.EventManager.Editor",
     "references": [
         "GUID:f7f1960c3bffcec4cb440c2f128a380a"
     ],
@@ -10,7 +10,7 @@
     "allowUnsafeCode": false,
     "overrideReferences": false,
     "precompiledReferences": [],
-    "autoReferenced": false,
+    "autoReferenced": true,
     "defineConstraints": [],
     "versionDefines": []
 }

@@ -1,16 +1,14 @@
 {
-    "name": "DreamMachineGameStudio.Dreamworks.Editor",
+    "name": "DreamMachineGameStudio.Dreamworks.ServiceLocator.Editor",
     "references": [
         "GUID:f7f1960c3bffcec4cb440c2f128a380a"
     ],
-    "includePlatforms": [
-        "Editor"
-    ],
+    "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,
     "precompiledReferences": [],
-    "autoReferenced": false,
+    "autoReferenced": true,
     "defineConstraints": [],
     "versionDefines": []
 }

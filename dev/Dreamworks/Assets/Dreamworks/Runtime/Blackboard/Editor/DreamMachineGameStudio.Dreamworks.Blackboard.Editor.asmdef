@@ -1,6 +1,7 @@
 {
-    "name": "DreamMachineGameStudio.Dreamworks.Editor",
+    "name": "DreamMachineGameStudio.Dreamworks.Blackboard.Editor",
     "references": [
+        "GUID:0ab5e506e551f044395484b516fe632d",
         "GUID:f7f1960c3bffcec4cb440c2f128a380a"
     ],
     "includePlatforms": [

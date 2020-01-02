@@ -9,15 +9,22 @@ namespace DreamMachineGameStudio.Dreamworks.Core
     /// </summary>
     /// <Author>Navid Bigdeli</Author>
     /// <CreationDate>February/5/2019</CreationDate>
-    [AttributeUsage(AttributeTargets.Class)]
-    public class AScriptableObjectWizard : AName
+    [AttributeUsage(AttributeTargets.All)]
+    public class AName : Attribute
     {
         #region Fields
-        public new static readonly Type CLASS_TYPE = typeof(AScriptableObjectWizard);
+        public static Type CLASS_TYPE = typeof(AName);
+        #endregion
+
+        #region Properties
+        public string Name { get; }
         #endregion
 
         #region Constructors
-        public AScriptableObjectWizard(string name) : base(name) { }
+        public AName(string name)
+        {
+            Name = name;
+        }
         #endregion
     }
 }

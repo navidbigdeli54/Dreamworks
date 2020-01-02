@@ -1,7 +1,9 @@
 ﻿/**Copyright 2016 - 2020, Dream Machine Game Studio. All Right Reserved.*/
 
 #pragma warning disable IDE0044 // Add readonly modifier
+#pragma warning disable CS0649
 
+using System;
 using UnityEngine;
 
 namespace DreamMachineGameStudio.Dreamworks.Core
@@ -11,7 +13,7 @@ namespace DreamMachineGameStudio.Dreamworks.Core
     /// </summary>
     /// <Author>Navid Bigdeli</Author>
     /// <CreationDate>February/5/2019</CreationDate>
-    [AScriptableObjectWizard]
+    [AScriptableObjectWizard("Framework Configuration")]
     public class SFrameworkConfiguration : SScriptableObject
     {
         #region Field
@@ -19,13 +21,14 @@ namespace DreamMachineGameStudio.Dreamworks.Core
         private bool dontLoadFramework = false;
 
         [SerializeField]
-        private string startupClass = string.Empty;
+        [ASubclassFilter(typeof(SStartup))]
+        private FSubclass startupClass;
         #endregion
 
         #region Property
         public bool DontLoadFramework => dontLoadFramework;
 
-        public string StartupClass => startupClass;
+        public Type StartupClass => startupClass.Type;
         #endregion
     }
 }

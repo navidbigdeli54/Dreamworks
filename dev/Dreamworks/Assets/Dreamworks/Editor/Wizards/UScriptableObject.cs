@@ -4,7 +4,6 @@ using System;
 using System.Linq;
 using UnityEngine;
 using UnityEditor;
-using System.Collections.Generic;
 using DreamMachineGameStudio.Dreamworks.Core;
 using DreamMachineGameStudio.Dreamworks.Utility;
 
@@ -20,7 +19,7 @@ namespace DreamMachineGameStudio.Dreamworks.Editor
         #region Field
         private int selectedIndex;
         private string[] scriptableObjectNames;
-        private IEnumerable<Type> scriptableObjectTypes;
+        private Type[] scriptableObjectTypes;
 
         private const string POPUP_LABLE_NAME = "Scriptable Objects";
         private const string CREATE_BUTTON_NAME = "Create";
@@ -39,9 +38,9 @@ namespace DreamMachineGameStudio.Dreamworks.Editor
         #region EditorWindow Methods
         private void OnEnable()
         {
-            scriptableObjectTypes = FReflectionUtility.GetSubTypesOf<SScriptableObject>().Where(x => FReflectionUtility.HasDefinedAttribute(x, typeof(AScriptableObjectWizard)));
+            scriptableObjectTypes = FReflectionUtility.GetSubTypesOf<SScriptableObject>().Where(x => FReflectionUtility.HasDefinedAttribute(x, AScriptableObjectWizard.CLASS_TYPE)).ToArray();
 
-            scriptableObjectNames = scriptableObjectTypes.Select(row => row.Name).ToArray();
+            scriptableObjectNames = scriptableObjectTypes.Select(x => FReflectionUtility.GetAttributeProperty<string>(x, AScriptableObjectWizard.CLASS_TYPE, nameof(AScriptableObjectWizard.Name))).ToArray();
         }
 
         private void OnGUI()

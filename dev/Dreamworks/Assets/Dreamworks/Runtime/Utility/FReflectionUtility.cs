@@ -83,7 +83,7 @@ namespace DreamMachineGameStudio.Dreamworks.Utility
 
         public static Type GetType(string typeName)
         {
-            foreach (var assemblyTypes in assemblies.Values)
+            foreach (Type[] assemblyTypes in assemblies.Values)
             {
                 Type desireType = assemblyTypes.Where(x => x.FullName.Equals(typeName, StringComparison.OrdinalIgnoreCase)).SingleOrDefault();
 
