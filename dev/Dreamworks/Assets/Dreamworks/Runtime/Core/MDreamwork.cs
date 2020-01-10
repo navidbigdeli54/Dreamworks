@@ -9,12 +9,9 @@ using System.Collections.Generic;
 using DreamMachineGameStudio.Dreamworks.Debug;
 using DreamMachineGameStudio.Dreamworks.Persistent;
 using DreamMachineGameStudio.Dreamworks.EventManager;
-using DreamMachineGameStudio.Dreamworks.ServiceLocator;
 
 namespace DreamMachineGameStudio.Dreamworks.Core
 {
-    /// <Author>Navid Bigdeli</Author>
-    /// <CreationDate>January/14/2019</CreationDate>
     public sealed class MDreamwork : MonoBehaviour
     {
         #region Field
@@ -160,6 +157,8 @@ namespace DreamMachineGameStudio.Dreamworks.Core
             FEventManager.Subscribe(FDefaultEventNameHelper.ON_GAME_MODE_LOADED, OnGameModeLoaded);
 
             FEventManager.Subscribe(FDefaultEventNameHelper.ON_SCENE_UNLOADED, OnSceneUnloaded);
+
+            PublishFakeSceneLoadedEvent();
         }
 
         public async Task RegisterAsycn(IInitializable initializable)
@@ -390,6 +389,11 @@ namespace DreamMachineGameStudio.Dreamworks.Core
                     FLog.Error(CLASS_TYPE.Name, exception);
                 }
             }
+        }
+
+        private void PublishFakeSceneLoadedEvent()
+        {
+            FEventManager.Publish(FDefaultEventNameHelper.ON_SCENE_LOADED, new SceneManager.FSceneLoadedEventArg(SceneManager.FSceneManager.ActiveScene, UnityEngine.SceneManagement.LoadSceneMode.Single));
         }
 
         private async void OnGameModeLoaded(object arg)

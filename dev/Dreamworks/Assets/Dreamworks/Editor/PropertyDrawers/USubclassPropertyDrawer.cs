@@ -5,18 +5,18 @@ using UnityEditor;
 using System.Linq;
 using UnityEngine;
 using System.Reflection;
+using System.Collections.Generic;
 using DreamMachineGameStudio.Dreamworks.Core;
 using DreamMachineGameStudio.Dreamworks.Utility;
 
 namespace DreamMachineGameStudio.Dreamworks.Editor
 {
-    /// <Author>Navid Bigdeli</Author>
-    /// <CreationDate>December/18/2019</CreationDate>
     [CustomPropertyDrawer(typeof(FSubclass))]
     public class USubclassPropertyDrawer : PropertyDrawer
     {
         #region Fields
-        private string[] typeNames;
+        private string[] typeFullNames;
+        private string[] displaynames;
         private int selectedIndex;
         #endregion
 
@@ -25,13 +25,13 @@ namespace DreamMachineGameStudio.Dreamworks.Editor
         {
             var nameProperty = property.FindPropertyRelative("fullName");
 
-            if (typeNames == null)
+            if (displaynames == null)
             {
                 CacheTypeNames();
 
-                if (typeNames != null && typeNames.Length > 0)
+                if (displaynames != null && displaynames.Length > 0)
                 {
-                    selectedIndex = Array.IndexOf(typeNames, nameProperty.stringValue);
+                    selectedIndex = Array.IndexOf(displaynames, nameProperty.stringValue);
 
                     if (selectedIndex == -1) selectedIndex = 0;
                 }
@@ -40,11 +40,11 @@ namespace DreamMachineGameStudio.Dreamworks.Editor
             Vector2 lableSize = GUI.skin.label.CalcSize(label);
 
             EditorGUI.LabelField(new Rect(position.x, position.y, lableSize.x, position.height), label);
-            selectedIndex = EditorGUI.Popup(new Rect(position.x + lableSize.x + 5, position.y, position.width - lableSize.x - 5, position.height), selectedIndex, typeNames);
+            selectedIndex = EditorGUI.Popup(new Rect(position.x + lableSize.x + 5, position.y, position.width - lableSize.x - 5, position.height), selectedIndex, displaynames);
 
-            if (typeNames != null && typeNames.Length > 0)
+            if (displaynames != null && displaynames.Length > 0)
             {
-                nameProperty.stringValue = typeNames[selectedIndex];
+                nameProperty.stringValue = typeFullNames[selectedIndex];
             }
         }
         #endregion
@@ -57,7 +57,9 @@ namespace DreamMachineGameStudio.Dreamworks.Editor
                 Attribute attribute = fieldInfo.GetCustomAttribute(ASubclassFilter.CLASS_TYPE);
                 PropertyInfo typePropertyInfo = attribute.GetType().GetProperty(nameof(ASubclassFilter.Type));
                 Type typeFilter = (Type)typePropertyInfo.GetValue(attribute);
-                typeNames = FReflectionUtility.GetSubTypesOf(typeFilter)?.Select(x => x.FullName).ToArray();
+                IEnumerable<Type> subtypes = FReflectionUtility.GetSubTypesOf(typeFilter);
+                typeFullNames = subtypes.Select(x => x.FullName).ToArray();
+                displaynames = subtypes.Select(x => FReflectionUtility.HasDefinedAttribute(x, AName.CLASS_TYPE) ? FReflectionUtility.GetAttributeProperty<string>(x, AName.CLASS_TYPE, nameof(AName.Name)) : x.FullName).ToArray();
             }
         }
 

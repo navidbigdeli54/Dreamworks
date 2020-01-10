@@ -9,11 +9,6 @@ using DreamMachineGameStudio.Dreamworks.Utility;
 
 namespace DreamMachineGameStudio.Dreamworks.Editor
 {
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <Author>Navid Bigdeli</Author>
-    /// <CreationDate>April/24/2019</CreationDate>
     public class UScriptableObject : EditorWindow
     {
         #region Field

@@ -2,7 +2,5 @@
 
 namespace DreamMachineGameStudio.Dreamworks.Core
 {
-    /// <Author>Navid Bigdeli</Author>
-    /// <CreationDate>August/14/2019</CreationDate>
     public interface IGameService : IService { }
 }

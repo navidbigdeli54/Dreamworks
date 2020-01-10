@@ -2,12 +2,6 @@
 
 namespace DreamMachineGameStudio.Dreamworks.Core
 {
-
-    /// <summary>
-    /// ITickable interface contains all Tick callbacks that framework has provides.
-    /// </summary>
-    /// <Author>Navid Bigdeli</Author>
-    /// <CreationDate>April/24/2018</CreationDate>
     public interface ITickable : IPureTickable
     {
         #region Property

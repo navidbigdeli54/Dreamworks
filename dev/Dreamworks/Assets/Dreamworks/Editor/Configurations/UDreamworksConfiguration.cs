@@ -1,19 +1,15 @@
 ﻿/**Copyright 2016 - 2020, Dream Machine Game Studio. All Right Reserved.*/
 
-using System;
 using UnityEngine;
 using UnityEditor;
-using System.Linq;
-using System.Collections.Generic;
 using DreamMachineGameStudio.Dreamworks.Core;
 
 using UEditor = UnityEditor.Editor;
-using DreamMachineGameStudio.Dreamworks.Utility;
 
 namespace DreamMachineGameStudio.Dreamworks.Editor
 {
-    [CustomEditor(typeof(SFrameworkConfiguration))]
-    public class ULoaderConfiguration : UEditor
+    [CustomEditor(typeof(SDreamworksConfiguration))]
+    public class UDreamworksConfiguration : UEditor
     {
         #region Field
         private SerializedProperty startupClassProperty;
@@ -23,10 +19,10 @@ namespace DreamMachineGameStudio.Dreamworks.Editor
         #endregion
 
         #region Static Methods
-        [MenuItem(itemName: "DreamMachineGameStudio/DreamWork/Configuration")]
+        [MenuItem(itemName: "DreamMachineGameStudio/DreamWork/Configuration", priority = 0)]
         private static void OpenConfigurationFile()
         {
-            Selection.activeObject = Resources.Load(nameof(SFrameworkConfiguration));
+            Selection.activeObject = Resources.Load(nameof(SDreamworksConfiguration));
         }
         #endregion
 

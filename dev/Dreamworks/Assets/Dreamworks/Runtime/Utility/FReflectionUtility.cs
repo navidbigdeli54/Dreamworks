@@ -8,11 +8,6 @@ using DreamMachineGameStudio.Dreamworks.Debug;
 
 namespace DreamMachineGameStudio.Dreamworks.Utility
 {
-    /// <summary>
-    /// Reflection Utility provide easy to use System.Reflection methods.
-    /// </summary>
-    /// <Author>Navid Bigdeli</Author>
-    /// <CreationDate>April/24/2018</CreationDate>
     public static class FReflectionUtility
     {
         #region Field

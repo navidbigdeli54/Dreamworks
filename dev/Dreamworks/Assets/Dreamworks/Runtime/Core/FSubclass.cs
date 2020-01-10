@@ -9,7 +9,7 @@ using DreamMachineGameStudio.Dreamworks.Utility;
 namespace DreamMachineGameStudio.Dreamworks.Core
 {
     [Serializable]
-    public class FSubclass
+    public sealed class FSubclass
     {
         #region Fields
         [SerializeField]

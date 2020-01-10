@@ -7,8 +7,6 @@ using UnityEngine;
 
 namespace DreamMachineGameStudio.Dreamworks.ServiceLocator.Editor
 {
-    /// <Author>Navid Bigdeli</Author>
-    /// <CreationDate>December/18/2019</CreationDate>
     public class UServiceLocatorEditor : EditorWindow
     {
         #region Fields

@@ -3,10 +3,8 @@
 using System;
 using UnityEngine.SceneManagement;
 
-namespace DreamMachineGameStudio.Dreamworks.SceneManagement
+namespace DreamMachineGameStudio.Dreamworks.SceneManager
 {
-    /// <Author>Navid Bigdeli</Author>
-    /// <CreationDate>August/8/2019</CreationDate>
     public class FSceneLoadedEventArg : EventArgs
     {
         #region Property

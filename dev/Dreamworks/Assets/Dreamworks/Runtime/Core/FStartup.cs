@@ -4,33 +4,30 @@ using UnityEngine;
 
 namespace DreamMachineGameStudio.Dreamworks.Core
 {
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <Author>Navid Bigdeli</Author>
-    /// <CreationDate>January/14/2019</CreationDate>
-    public class SStartup : SScriptableObject, IStartup
+    public class FStartup : IStartup
     {
         #region Method
         protected virtual void Configuration() { }
         #endregion
 
         #region IStartup Implementation
-        void IStartup.Configuration()
+        void IStartup.Run()
         {
             Screen.sleepTimeout = 0;
             Application.targetFrameRate = 60;
 
-            MDreamwork[] existedInstances = FindObjectsOfType<MDreamwork>();
+            MDreamwork[] existedInstances = Object.FindObjectsOfType<MDreamwork>();
             if (existedInstances != null && existedInstances.Length > 0)
             {
                 for (int i = 0; i < existedInstances.Length; ++i)
                 {
-                    Destroy(existedInstances[i].gameObject);
+                    Object.Destroy(existedInstances[i].gameObject);
                 }
             }
 
             new GameObject().AddComponent<MDreamwork>();
+
+            new GameObject().AddComponent<CGameManagement>();
 
             Configuration();
 

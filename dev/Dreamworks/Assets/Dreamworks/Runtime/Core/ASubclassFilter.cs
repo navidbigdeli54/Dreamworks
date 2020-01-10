@@ -6,8 +6,6 @@ using System;
 
 namespace DreamMachineGameStudio.Dreamworks.Core
 {
-    /// <Author>Navid Bigdeli</Author>
-    /// <CreationDate>December/19/2019</CreationDate>
     public class ASubclassFilter : Attribute
     {
         #region Fields

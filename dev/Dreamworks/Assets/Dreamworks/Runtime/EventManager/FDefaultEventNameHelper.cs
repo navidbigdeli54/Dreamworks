@@ -2,8 +2,6 @@
 
 namespace DreamMachineGameStudio.Dreamworks.EventManager
 {
-    /// <Author>Navid Bigdeli</Author>
-    /// <CreationDate>February/5/2019</CreationDate>
     public static class FDefaultEventNameHelper
     {
         #region Fields

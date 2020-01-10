@@ -6,13 +6,11 @@ using UnityEngine;
 
 namespace DreamMachineGameStudio.Dreamworks.Core
 {
-    /// <Author>Navid Bigdeli</Author>
-    /// <CreationDate>December/18/2019</CreationDate>
-    public class CLevelConfig : CComponent
+    public class CLevelConfiguration : CComponent
     {
         #region Fields
         [SerializeField]
-        [ASubclassFilter(typeof(CComponent))]
+        [ASubclassFilter(typeof(FGameMode))]
         private FSubclass gameMode;
         #endregion
 

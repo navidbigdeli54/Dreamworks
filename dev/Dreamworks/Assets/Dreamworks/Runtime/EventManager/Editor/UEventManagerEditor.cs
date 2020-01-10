@@ -9,8 +9,6 @@ using System.Collections.Generic;
 
 namespace DreamMachineGameStudio.Dreamworks.EventManager.Editor
 {
-    /// <Author>Navid Bigdeli</Author>
-    /// <CreationDate>December/18/2019</CreationDate>
     public class UEventManagerEditor : EditorWindow
     {
         #region Fields

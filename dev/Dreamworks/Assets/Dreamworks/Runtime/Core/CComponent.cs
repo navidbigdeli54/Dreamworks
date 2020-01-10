@@ -1,5 +1,7 @@
 ﻿/**Copyright 2016 - 2020, Dream Machine Game Studio. All Right Reserved.*/
 
+#pragma warning disable IDE0051
+
 using System;
 using UnityEngine;
 using System.Threading.Tasks;
@@ -7,14 +9,14 @@ using DreamMachineGameStudio.Dreamworks.Persistent;
 
 namespace DreamMachineGameStudio.Dreamworks.Core
 {
-    /// <summary>
-    /// CComponent is base class for all component can attach to an game object. It has all callbacks that framework has provides.
-    /// </summary>
-    /// <Author>Navid Bigdeli</Author>
-    /// <CreationDate>April/24/2018</CreationDate>
     public abstract class CComponent : MonoBehaviour, IFObject
     {
         #region Field
+        /// <summary>
+        /// Use this instance instead of Transform for the sake of performance.
+        /// </summary>
+        protected Transform CachedTransform;
+
         private bool canEverTick = false;
 
         private bool canEverLateTick = false;
@@ -72,19 +74,12 @@ namespace DreamMachineGameStudio.Dreamworks.Core
         /// If true, this component will get FixedTick beforeBeginPlay.
         /// </summary>
         protected bool CanFixedTickBeforePlay { get; set; } = false;
-
-        /// <summary>
-        /// Use this instance instead of Transform for the sake of performance.
-        /// </summary>
-        protected Transform CachedTransform { get; private set; }
         #endregion
 
         #region MonoBehaviour Methods
         private async Task Awake()
         {
             CachedTransform = GetComponent<Transform>();
-
-            transform.position = new Vector3();
 
             await MDreamwork.Instance.RegisterAsycn(this);
 

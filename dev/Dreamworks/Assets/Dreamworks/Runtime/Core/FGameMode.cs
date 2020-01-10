@@ -4,8 +4,6 @@ using System.Threading.Tasks;
 
 namespace DreamMachineGameStudio.Dreamworks.Core
 {
-    /// <Author>Navid Bigdeli</Author>
-    /// <CreationDate>April/24/2018</CreationDate>
     public abstract class FGameMode : IGameMode
     {
         #region Property

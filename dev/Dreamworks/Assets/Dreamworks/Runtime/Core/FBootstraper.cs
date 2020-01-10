@@ -6,11 +6,6 @@ using DreamMachineGameStudio.Dreamworks.Debug;
 
 namespace DreamMachineGameStudio.Dreamworks.Core
 {
-    /// <summary>
-    /// FBootstraper is starting point of framework. It's responsible to instantiate startup class that has been selected in framework's configuration file.
-    /// </summary>
-    /// <Author>Navid Bigdeli</Author>
-    /// <CreationDate>January/14/2019</CreationDate>
     internal static class FBootstraper
     {
         #region Property
@@ -21,7 +16,7 @@ namespace DreamMachineGameStudio.Dreamworks.Core
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void StartUp()
         {
-            SFrameworkConfiguration configuration = Resources.Load<SFrameworkConfiguration>(nameof(SFrameworkConfiguration));
+            SDreamworksConfiguration configuration = Resources.Load<SDreamworksConfiguration>(nameof(SDreamworksConfiguration));
 
             if (configuration == null)
             {
@@ -46,7 +41,7 @@ namespace DreamMachineGameStudio.Dreamworks.Core
                 return;
             }
 
-            if (startupType.IsSubclassOf(typeof(SStartup)) == false)
+            if (startupType.IsSubclassOf(typeof(FStartup)) == false)
             {
                 FLog.Error(CLASS_TYPE.Name, "Startup class should be a subclass of `SStartup`.");
 
@@ -54,17 +49,8 @@ namespace DreamMachineGameStudio.Dreamworks.Core
             }
 
 
-            if ((ScriptableObject.CreateInstance(startupType) is IStartup startup))
-            {
-                startup.Configuration();
-            }
-            else
-            {
-                FLog.Error(CLASS_TYPE.Name, "Can't instantiate startup object.");
-
-                return;
-            }
-
+            IStartup startup = (IStartup)Activator.CreateInstance(startupType);
+            startup.Run();
         }
         #endregion
     }

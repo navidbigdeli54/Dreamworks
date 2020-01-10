@@ -2,11 +2,6 @@
 
 namespace DreamMachineGameStudio.Dreamworks.Core
 {
-    /// <summary>
-    /// IInitializable contains all Initialization callbacks that framework has provides.
-    /// </summary>
-    /// <Author>Navid Bigdeli</Author>
-    /// <CreationDate>April/24/2018</CreationDate>
     public interface IInitializable : IPureInitializable
     {
         #region Property

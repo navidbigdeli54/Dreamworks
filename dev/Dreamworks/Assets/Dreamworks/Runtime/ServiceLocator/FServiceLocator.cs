@@ -6,12 +6,6 @@ using DreamMachineGameStudio.Dreamworks.Debug;
 
 namespace DreamMachineGameStudio.Dreamworks.ServiceLocator
 {
-    /// <summary>
-    /// Provide a global point of access to a service without coupling users to the concrete class that implements it.
-    /// </summary>
-    /// <see cref="http://gameprogrammingpatterns.com/service-locator.html"/>
-    /// <Author>Navid Bigdeli</Author>
-    /// <CreationDate>January/14/2019</CreationDate>
     public static class FServiceLocator
     {
         #region Fields
