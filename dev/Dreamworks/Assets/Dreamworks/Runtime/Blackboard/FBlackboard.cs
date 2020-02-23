@@ -5,6 +5,7 @@
 using System.Collections.Generic;
 using DreamMachineGameStudio.Dreamworks.Core;
 using DreamMachineGameStudio.Dreamworks.Debug;
+using DreamMachineGameStudio.Dreamworks.Variant;
 
 namespace DreamMachineGameStudio.Dreamworks.Blackboard
 {

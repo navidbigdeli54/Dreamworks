@@ -1,7 +1,7 @@
 ﻿/**Copyright 2016 - 2020, Dream Machine Game Studio. All Right Reserved.*/
 
-using DreamMachineGameStudio.Dreamworks.Core;
 using DreamMachineGameStudio.Dreamworks.Blackboard;
+using DreamMachineGameStudio.Dreamworks.Core;
 
 namespace DreamMachineGameStudio.Dreamworks.Rule
 {
@@ -10,9 +10,9 @@ namespace DreamMachineGameStudio.Dreamworks.Rule
         #region Properties
         FStringId Key { get; }
 
-        FBlackboard Blackboard { get; }
-
         EValueComparer Comparer { get; }
+
+        FBlackboard Blackboard { get; }
         #endregion
 
         #region Methods

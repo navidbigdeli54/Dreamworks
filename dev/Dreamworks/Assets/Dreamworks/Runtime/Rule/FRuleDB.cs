@@ -14,7 +14,20 @@ namespace DreamMachineGameStudio.Dreamworks.Rule
         #region Methods
         public void AddRule(FRule rule) => rules.Add(rule);
 
-        public FRespone GetResponse()
+        public bool Evaluate()
+        {
+            for (int i = 0; i < rules.Count; i++)
+            {
+                if (rules[i].Evaluate())
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public IResponse GetResponse()
         {
             List<FRule> acceptedRules = new List<FRule>(rules.Count);
 
@@ -26,26 +39,21 @@ namespace DreamMachineGameStudio.Dreamworks.Rule
 
                 if (rule.Evaluate())
                 {
-                    if (maxCriteriaNumber <= rule.Criterias.Count)
+                    if (rule.Criterias.Count >= maxCriteriaNumber)
                     {
-                        if (maxCriteriaNumber == rule.Criterias.Count)
+                        if (rule.Criterias.Count > maxCriteriaNumber)
                         {
-                            acceptedRules.Add(rule);
-                        }
-                        else
-                        {
-                            maxCriteriaNumber = rule.Criterias.Count;
-
                             acceptedRules.Clear();
-                            acceptedRules.Add(rule);
+
+                            maxCriteriaNumber = rule.Criterias.Count;
                         }
+
+                        acceptedRules.Add(rule);
                     }
                 }
             }
 
             if (acceptedRules.Count == 0) return null;
-
-            if (acceptedRules.Count == 1) return acceptedRules[0].Response;
 
             return acceptedRules[Random.Range(0, acceptedRules.Count)].Response;
         }

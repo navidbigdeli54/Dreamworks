@@ -1,26 +1,26 @@
 ﻿/**Copyright 2016 - 2020, Dream Machine Game Studio. All Right Reserved.*/
 
-using System;
 using DreamMachineGameStudio.Dreamworks.Core;
 using DreamMachineGameStudio.Dreamworks.Debug;
+using DreamMachineGameStudio.Dreamworks.Variant;
 using DreamMachineGameStudio.Dreamworks.Blackboard;
 
 namespace DreamMachineGameStudio.Dreamworks.Rule
 {
-    public sealed class FCriteria<T> : ICriteria where T : class, IValue
+    public sealed class FCriteria : ICriteria
     {
         #region Fields
         private readonly FStringId key;
 
-        private readonly T expectedValue;
-
-        private readonly FBlackboard blackboard;
+        private readonly IValue expectedValue;
 
         private readonly EValueComparer comparer;
+
+        private readonly FBlackboard blackboard;
         #endregion
 
         #region Constructors
-        public FCriteria(FBlackboard blackboard, FStringId key, EValueComparer comparer, T expectedValue)
+        public FCriteria(FBlackboard blackboard, FStringId key, EValueComparer comparer, IValue expectedValue)
         {
             this.key = key;
             this.comparer = comparer;
@@ -30,24 +30,20 @@ namespace DreamMachineGameStudio.Dreamworks.Rule
         #endregion
 
         #region Private Methods
-        private bool CheckEquality(T currentValue)
+        private bool CheckEquality(IValue currentValue)
         {
             FAssert.AreEqual(expectedValue.GetType(), currentValue.GetType(), $"Expected value is {expectedValue.GetType().Name} but current value is {currentValue.GetType()}");
 
             if (currentValue == expectedValue) return true;
 
-            FAssert.IsTrue(currentValue is IEquatable<T>, $"Value is not IEquatable type.");
-
-            return ((IEquatable<T>)currentValue).Equals(expectedValue);
+            return currentValue.Equals(expectedValue);
         }
 
-        private int CompareValue(T currentValue)
+        private int CompareValue(IValue currentValue)
         {
             FAssert.AreEqual(expectedValue.GetType(), currentValue.GetType(), $"Expected value is {expectedValue.GetType().Name} but current value is {currentValue.GetType()}");
 
-            FAssert.IsTrue(currentValue is IComparable<T>, $"Value is not IEquatable type.");
-
-            return ((IComparable<T>)currentValue).CompareTo(expectedValue);
+            return currentValue.CompareTo(expectedValue);
         }
         #endregion
 
@@ -60,7 +56,7 @@ namespace DreamMachineGameStudio.Dreamworks.Rule
 
         bool ICriteria.Evaluate()
         {
-            if (blackboard.TryGetValue(key, out T currentValue))
+            if (blackboard.TryGetValue(key, out IValue currentValue))
             {
                 switch (comparer)
                 {

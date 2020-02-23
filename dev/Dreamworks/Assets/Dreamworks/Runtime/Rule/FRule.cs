@@ -2,6 +2,7 @@
 
 using System.Collections.Generic;
 using DreamMachineGameStudio.Dreamworks.Core;
+using DreamMachineGameStudio.Dreamworks.Variant;
 using DreamMachineGameStudio.Dreamworks.Blackboard;
 
 namespace DreamMachineGameStudio.Dreamworks.Rule
@@ -13,29 +14,29 @@ namespace DreamMachineGameStudio.Dreamworks.Rule
         #endregion
 
         #region Properties
-        public FRespone Response { get; private set; }
+        public IResponse Response { get; private set; }
 
         public IReadOnlyList<ICriteria> Criterias => criterias;
         #endregion
 
         #region Methods
-        public FRule SetResponse(FRespone respone)
+        public FRule SetResponse(IResponse respone)
         {
             this.Response = respone;
 
             return this;
         }
 
-        public FRule AddCriteria<T>(FBlackboard blackboard, FStringId key, T expectedValue) where T : class, IValue
+        public FRule AddCriteria(FBlackboard blackboard, FStringId key, IValue expectedValue)
         {
-            criterias.Add(new FCriteria<T>(blackboard, key, EValueComparer.Equal, expectedValue));
+            criterias.Add(new FCriteria(blackboard, key, EValueComparer.Equal, expectedValue));
 
             return this;
         }
 
-        public FRule AddCriteria<T>(FBlackboard blackboard, FStringId key, EValueComparer comparer, T expectedValue) where T : class, IValue
+        public FRule AddCriteria(FBlackboard blackboard, FStringId key, EValueComparer comparer, IValue expectedValue)
         {
-            criterias.Add(new FCriteria<T>(blackboard, key, comparer, expectedValue));
+            criterias.Add(new FCriteria(blackboard, key, comparer, expectedValue));
 
             return this;
         }
@@ -44,7 +45,8 @@ namespace DreamMachineGameStudio.Dreamworks.Rule
         {
             for (int i = 0; i < criterias.Count; i++)
             {
-                if (criterias[i].Evaluate() == false) return false;
+                if (criterias[i].Evaluate() == false)
+                    return false;
             }
 
             return true;
