@@ -2,5 +2,5 @@
 
 namespace DreamMachineGameStudio.Dreamworks.Core
 {
-    public interface IFObject : IInitializable, ITickable { }
+    public interface IFObject : IInitializableObject, ITickableObject { }
 }

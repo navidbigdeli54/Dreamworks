@@ -7,12 +7,18 @@ using DreamMachineGameStudio.Dreamworks.Core;
 
 namespace DreamMachineGameStudio.Dreamworks.HFSM
 {
-    public interface IState : IPureTickable, IPureInitializable
+    public interface IState : IInitializable, ITickable
     {
         #region Properties
         bool IsActive { get; }
 
         IState Parent { get; }
+
+        IState InitialState { get; }
+
+        IHistoryState HistoryState { get; }
+
+        IReadOnlyList<IState> Children { get; }
         #endregion
 
         #region Methods
@@ -20,11 +26,17 @@ namespace DreamMachineGameStudio.Dreamworks.HFSM
 
         void OnExit();
 
-        ITransition CheckTransactions(FStringId trigger);
+        ITransition CheckTransitions(FTrigger trigger);
+
+        bool HasAsAncestor(IState state);
 
         IReadOnlyList<IState> GetAncestors();
 
-        bool IsAncestor(IState state);
+        void AddChild(IState child);
+
+        void SetParent(IState parent);
+
+        void SetMachine(IHFSM machine);
         #endregion
     }
 }

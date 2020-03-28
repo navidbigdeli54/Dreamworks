@@ -15,23 +15,23 @@ namespace DreamMachineGameStudio.Dreamworks.Core
     public sealed class MDreamwork : MonoBehaviour
     {
         #region Field
-        private readonly List<IInitializable> registeredObjects = new List<IInitializable>();
+        private readonly List<IInitializableObject> _registeredObjects = new List<IInitializableObject>();
 
-        private readonly List<IInitializable> pendingRegiserationRequests = new List<IInitializable>();
+        private readonly List<IInitializableObject> _pendingRegiserationRequests = new List<IInitializableObject>();
 
-        private readonly List<ITickable> registeredTicks = new List<ITickable>();
+        private readonly List<ITickableObject> _registeredTicks = new List<ITickableObject>();
 
-        private readonly List<ITickable> registeredLateTicks = new List<ITickable>();
+        private readonly List<ITickableObject> _registeredLateTicks = new List<ITickableObject>();
 
-        private readonly List<ITickable> registeredFixedTick = new List<ITickable>();
+        private readonly List<ITickableObject> _registeredFixedTick = new List<ITickableObject>();
 
-        private readonly HashSet<IInitializable> initializablesHolder = new HashSet<IInitializable>();
+        private readonly HashSet<IInitializableObject> _initializablesHolder = new HashSet<IInitializableObject>();
 
-        private readonly HashSet<ITickable> ticksHolder = new HashSet<ITickable>();
+        private readonly HashSet<ITickableObject> _ticksHolder = new HashSet<ITickableObject>();
 
-        private readonly HashSet<ITickable> lateTicksHolder = new HashSet<ITickable>();
+        private readonly HashSet<ITickableObject> _lateTicksHolder = new HashSet<ITickableObject>();
 
-        private readonly HashSet<ITickable> fixedTicksHolder = new HashSet<ITickable>();
+        private readonly HashSet<ITickableObject> _fixedTicksHolder = new HashSet<ITickableObject>();
         #endregion
 
         #region Property
@@ -63,17 +63,15 @@ namespace DreamMachineGameStudio.Dreamworks.Core
 
         private void Update()
         {
-            int count = registeredTicks.Count;
-
-            for (int i = 0; i < count; i++)
+            for (int i = 0; i < _registeredTicks.Count; ++i)
             {
-                ITickable tickable = registeredTicks[i];
+                ITickableObject tickable = _registeredTicks[i];
 
                 if (tickable == null) continue;
 
                 if (HasInitialized == false) continue;
 
-                if (tickable is IInitializable initializable && initializable.HasInitialized == false) continue;
+                if (tickable is IInitializableObject initializable && initializable.HasInitialized == false) continue;
 
                 if (tickable.CanEverTick == false) continue;
 
@@ -92,17 +90,15 @@ namespace DreamMachineGameStudio.Dreamworks.Core
 
         private void LateUpdate()
         {
-            int count = registeredLateTicks.Count;
-
-            for (int i = 0; i < count; i++)
+            for (int i = 0; i < _registeredLateTicks.Count; ++i)
             {
-                ITickable tickable = registeredLateTicks[i];
+                ITickableObject tickable = _registeredLateTicks[i];
 
                 if (tickable == null) continue;
 
                 if (this.HasInitialized == false) continue;
 
-                if (tickable is IInitializable initializable && initializable.HasInitialized == false) continue;
+                if (tickable is IInitializableObject initializable && initializable.HasInitialized == false) continue;
 
                 if (tickable.CanEverLateTick == false) continue;
 
@@ -116,22 +112,22 @@ namespace DreamMachineGameStudio.Dreamworks.Core
                 {
                     FLog.Error(CLASS_TYPE.Name, exception.Message);
                 }
+
+                InitializePendingObjects();
             }
         }
 
         private void FixedUpdate()
         {
-            int count = registeredFixedTick.Count;
-
-            for (int i = 0; i < count; i++)
+            for (int i = 0; i < _registeredFixedTick.Count; ++i)
             {
-                ITickable tickable = registeredFixedTick[i];
+                ITickableObject tickable = _registeredFixedTick[i];
 
                 if (tickable == null) continue;
 
                 if (this.HasInitialized == false) continue;
 
-                if (tickable is IInitializable initializable && initializable.HasInitialized == false) continue;
+                if (tickable is IInitializableObject initializable && initializable.HasInitialized == false) continue;
 
                 if (tickable.CanEverFixedTick == false) continue;
 
@@ -139,7 +135,7 @@ namespace DreamMachineGameStudio.Dreamworks.Core
 
                 try
                 {
-                    tickable.FixedTick(Time.deltaTime);
+                    tickable.FixedTick(Time.fixedDeltaTime);
                 }
                 catch (Exception exception)
                 {
@@ -154,55 +150,58 @@ namespace DreamMachineGameStudio.Dreamworks.Core
         {
             await InitializeServicesAsync();
 
-            FEventManager.Subscribe(FDefaultEventNameHelper.ON_GAME_MODE_LOADED, OnGameModeLoaded);
+            FEventManager.Subscribe(FEventManager.ON_GAME_MODE_LOADED, OnGameModeLoaded);
 
-            FEventManager.Subscribe(FDefaultEventNameHelper.ON_SCENE_UNLOADED, OnSceneUnloaded);
+            FEventManager.Subscribe(FEventManager.ON_SCENE_UNLOADED, OnSceneUnloaded);
 
             PublishFakeSceneLoadedEvent();
         }
 
-        public async Task RegisterAsycn(IInitializable initializable)
+        public void Register(IInitializableObject initializable)
         {
-            if (initializablesHolder.Contains(initializable))
+            try
             {
-                FLog.Warning(CLASS_TYPE.Name, $"{initializable.Name} has already registered");
-
-                return;
-            }
-
-            if (HasInitialized == false)
-            {
-                if (initializable is IService && (initializable is IGameService) == false)
+                if (_initializablesHolder.Contains(initializable))
                 {
-                    registeredObjects.Add(initializable);
-                }
-                else
-                {
-                    pendingRegiserationRequests.Add(initializable);
-                }
-            }
-            else
-            {
-                if (initializable is IService && (initializable is IGameService) == false)
-                {
-                    FLog.Error(CLASS_TYPE.Name, $"{initializable.Name} is a service and should not be registered during game play, use GameStartup to register them. Registration aborted.");
+                    FLog.Warning(CLASS_TYPE.Name, $"{initializable.Name} has already registered");
 
                     return;
                 }
 
-                await initializable.PreInitializeAsync();
+                if (HasInitialized == false)
+                {
+                    if (initializable is IService && (initializable is IGameService) == false)
+                    {
+                        _registeredObjects.Add(initializable);
+                    }
+                    else
+                    {
+                        _pendingRegiserationRequests.Add(initializable);
+                    }
+                }
+                else
+                {
+                    if (initializable is IService && (initializable is IGameService) == false)
+                    {
+                        FLog.Error(CLASS_TYPE.Name, $"{initializable.Name} is a service and should not be registered during game play, use GameStartup to register them. Registration aborted.");
 
-                await initializable.InitializeAsync();
+                        return;
+                    }
 
-                await initializable.BeginPlayAsync();
+                    _pendingRegiserationRequests.Add(initializable);
+                }
+
+                _initializablesHolder.Add(initializable);
             }
-
-            initializablesHolder.Add(initializable);
+            catch (Exception exception)
+            {
+                FLog.Error(nameof(MDreamwork), exception.Message);
+            }
         }
 
-        public async Task UnregisterAsync(IInitializable initializable)
+        public async Task UnregisterAsync(IInitializableObject initializable)
         {
-            if (initializablesHolder.Contains(initializable) == false)
+            if (_initializablesHolder.Contains(initializable) == false)
             {
                 FLog.Warning(CLASS_TYPE.Name, $"{initializable.Name} has not registered but wants to unregister itself.");
 
@@ -211,109 +210,109 @@ namespace DreamMachineGameStudio.Dreamworks.Core
 
             await initializable.UninitializeAsync();
 
-            registeredObjects.Remove(initializable);
+            _registeredObjects.Remove(initializable);
 
-            initializablesHolder.Remove(initializable);
+            _initializablesHolder.Remove(initializable);
 
-            if (initializable is ITickable tickable)
+            if (initializable is ITickableObject tickable)
             {
-                if (ticksHolder.Contains(tickable))
+                if (_ticksHolder.Contains(tickable))
                     UnregisterTick(tickable);
 
-                if (lateTicksHolder.Contains(tickable))
+                if (_lateTicksHolder.Contains(tickable))
                     UnregisterLateTick(tickable);
 
-                if (fixedTicksHolder.Contains(tickable))
+                if (_fixedTicksHolder.Contains(tickable))
                     UnregisterFixedTick(tickable);
             }
         }
 
-        public void RegisterTick(ITickable tickable)
+        public void RegisterTick(ITickableObject tickable)
         {
-            if (ticksHolder.Contains(tickable))
+            if (_ticksHolder.Contains(tickable))
             {
                 FLog.Warning(CLASS_TYPE.Name, $"{tickable.Name} already registered for tick.");
 
                 return;
             }
 
-            registeredTicks.Add(tickable);
+            _registeredTicks.Add(tickable);
 
-            ticksHolder.Add(tickable);
+            _ticksHolder.Add(tickable);
         }
 
-        public void UnregisterTick(ITickable tickable)
+        public void UnregisterTick(ITickableObject tickable)
         {
-            if (ticksHolder.Contains(tickable) == false)
+            if (_ticksHolder.Contains(tickable) == false)
             {
                 FLog.Warning(CLASS_TYPE.Name, $"{tickable.Name} has not registered for tick but wants to unregister.");
 
                 return;
             }
 
-            registeredTicks.Remove(tickable);
+            _registeredTicks.Remove(tickable);
 
-            ticksHolder.Remove(tickable);
+            _ticksHolder.Remove(tickable);
         }
 
-        public void RegisterLateTick(ITickable tickable)
+        public void RegisterLateTick(ITickableObject tickable)
         {
-            if (lateTicksHolder.Contains(tickable))
+            if (_lateTicksHolder.Contains(tickable))
             {
                 FLog.Warning(CLASS_TYPE.Name, $"{tickable.Name} already registered for late tick.");
 
                 return;
             }
 
-            registeredLateTicks.Add(tickable);
+            _registeredLateTicks.Add(tickable);
 
-            lateTicksHolder.Add(tickable);
+            _lateTicksHolder.Add(tickable);
         }
 
-        public void UnregisterLateTick(ITickable tickable)
+        public void UnregisterLateTick(ITickableObject tickable)
         {
-            if (lateTicksHolder.Contains(tickable) == false)
+            if (_lateTicksHolder.Contains(tickable) == false)
             {
                 FLog.Warning(CLASS_TYPE.Name, $"{tickable.Name} has not registered for late tick but wants to unregister.");
 
                 return;
             }
 
-            registeredLateTicks.Remove(tickable);
+            _registeredLateTicks.Remove(tickable);
 
-            lateTicksHolder.Remove(tickable);
+            _lateTicksHolder.Remove(tickable);
         }
 
-        public void RegisterFixedTick(ITickable tickable)
+        public void RegisterFixedTick(ITickableObject tickable)
         {
-            if (fixedTicksHolder.Contains(tickable))
+            if (_fixedTicksHolder.Contains(tickable))
             {
                 FLog.Warning(CLASS_TYPE.Name, $"{tickable.Name} already registered for fixed tick.");
 
                 return;
             }
 
-            registeredFixedTick.Add(tickable);
+            _registeredFixedTick.Add(tickable);
 
-            fixedTicksHolder.Add(tickable);
+            _fixedTicksHolder.Add(tickable);
         }
 
-        public void UnregisterFixedTick(ITickable tickable)
+        public void UnregisterFixedTick(ITickableObject tickable)
         {
-            if (fixedTicksHolder.Contains(tickable) == false)
+            if (_fixedTicksHolder.Contains(tickable) == false)
             {
                 FLog.Warning(CLASS_TYPE.Name, $"{tickable.Name} has not registered for fixed tick but wants to unregister.");
 
                 return;
             }
 
-            registeredFixedTick.Remove(tickable);
+            _registeredFixedTick.Remove(tickable);
 
-            fixedTicksHolder.Remove(tickable);
+            _fixedTicksHolder.Remove(tickable);
         }
         #endregion
 
-        #region Helpers
+        #region Private Methods
         private async Task InitializeServicesAsync()
         {
             /*
@@ -321,22 +320,20 @@ namespace DreamMachineGameStudio.Dreamworks.Core
              * So we safely assume that at this moment, only IService instances are in _registeredObjects list.
              */
 
-            await PreinitializeAsync(registeredObjects);
+            await PreinitializeAsync(_registeredObjects);
 
-            await InitializeAsync(registeredObjects);
+            await InitializeAsync(_registeredObjects);
 
-            await BeginPlayAsync(registeredObjects);
+            await BeginPlayAsync(_registeredObjects);
         }
 
-        private async Task PreinitializeAsync(List<IInitializable> list)
+        private async Task PreinitializeAsync(IReadOnlyList<IInitializableObject> list)
         {
-            int count = list.Count;
-
-            for (int i = 0; i < count; i++)
+            for (int i = 0; i < list.Count; i++)
             {
                 try
                 {
-                    IInitializable initializable = list[i];
+                    IInitializableObject initializable = list[i];
 
                     if (initializable.HasInitialized) continue;
 
@@ -349,15 +346,13 @@ namespace DreamMachineGameStudio.Dreamworks.Core
             }
         }
 
-        private async Task InitializeAsync(List<IInitializable> list)
+        private async Task InitializeAsync(IReadOnlyList<IInitializableObject> list)
         {
-            int count = list.Count;
-
-            for (int i = 0; i < count; i++)
+            for (int i = 0; i < list.Count; i++)
             {
                 try
                 {
-                    IInitializable initializable = list[i];
+                    IInitializableObject initializable = list[i];
 
                     if (initializable.HasInitialized) continue;
 
@@ -370,15 +365,13 @@ namespace DreamMachineGameStudio.Dreamworks.Core
             }
         }
 
-        private async Task BeginPlayAsync(List<IInitializable> list)
+        private async Task BeginPlayAsync(IReadOnlyList<IInitializableObject> list)
         {
-            int count = list.Count;
-
-            for (int i = 0; i < count; i++)
+            for (int i = 0; i < list.Count; i++)
             {
                 try
                 {
-                    IInitializable initializable = list[i];
+                    IInitializableObject initializable = list[i];
 
                     if (initializable.HasBeganPlay) continue;
 
@@ -393,22 +386,37 @@ namespace DreamMachineGameStudio.Dreamworks.Core
 
         private void PublishFakeSceneLoadedEvent()
         {
-            FEventManager.Publish(FDefaultEventNameHelper.ON_SCENE_LOADED, new SceneManager.FSceneLoadedEventArg(SceneManager.FSceneManager.ActiveScene, UnityEngine.SceneManagement.LoadSceneMode.Single));
+            FEventManager.Publish(FEventManager.ON_SCENE_LOADED, new SceneManager.FSceneLoadedEventArg(SceneManager.FSceneManager.ActiveScene, UnityEngine.SceneManagement.LoadSceneMode.Single));
         }
 
         private async void OnGameModeLoaded(object arg)
         {
             HasInitialized = true;
 
-            await PreinitializeAsync(pendingRegiserationRequests);
-
-            await InitializeAsync(pendingRegiserationRequests);
-
-            await BeginPlayAsync(pendingRegiserationRequests);
+            await InitializePendingObjectsAsync();
 
             HasBeganPlay = true;
+        }
 
-            registeredObjects.AddRange(pendingRegiserationRequests);
+        private async void InitializePendingObjects()
+        {
+            await InitializePendingObjectsAsync();
+        }
+
+        private async Task InitializePendingObjectsAsync()
+        {
+            if (_pendingRegiserationRequests.Count > 0)
+            {
+                await PreinitializeAsync(_pendingRegiserationRequests);
+
+                await InitializeAsync(_pendingRegiserationRequests);
+
+                await BeginPlayAsync(_pendingRegiserationRequests);
+
+                _registeredObjects.AddRange(_pendingRegiserationRequests);
+
+                _pendingRegiserationRequests.Clear();
+            }
         }
 
         private void OnSceneUnloaded(object arg)

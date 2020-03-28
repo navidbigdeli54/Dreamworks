@@ -1,7 +1,7 @@
 ﻿/**Copyright 2016 - 2020, Dream Machine Game Studio. All Right Reserved.*/
 
-using DreamMachineGameStudio.Dreamworks.Blackboard;
 using DreamMachineGameStudio.Dreamworks.Core;
+using DreamMachineGameStudio.Dreamworks.Blackboard;
 
 namespace DreamMachineGameStudio.Dreamworks.Rule
 {

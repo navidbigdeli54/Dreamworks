@@ -5,25 +5,28 @@
 
 using System;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace DreamMachineGameStudio.Dreamworks.Core
 {
-    [AScriptableObjectWizard("Dreamworks Configuration")]
+    [ScriptableObjectWizardAttribute("Dreamworks Configuration")]
     public class SDreamworksConfiguration : SScriptableObject
     {
         #region Field
         [SerializeField]
-        private bool dontLoadFramework = false;
+        [FormerlySerializedAs("dontLoadFramework")]
+        private bool _dontLoadFramework = false;
 
         [SerializeField]
-        [ASubclassFilter(typeof(FStartup))]
-        private FSubclass startupClass;
+        [SubclassFilter(typeof(FStartup))]
+        [FormerlySerializedAs("startupClass")]
+        private FSubclass _startupClass;
         #endregion
 
         #region Property
-        public bool DontLoadFramework => dontLoadFramework;
+        public bool DontLoadFramework => _dontLoadFramework;
 
-        public Type StartupClass => startupClass.Type;
+        public Type StartupClass => _startupClass.Type;
         #endregion
     }
 }

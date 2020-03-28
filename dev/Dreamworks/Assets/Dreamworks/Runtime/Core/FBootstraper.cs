@@ -27,7 +27,7 @@ namespace DreamMachineGameStudio.Dreamworks.Core
 
             if (configuration.DontLoadFramework)
             {
-                FLog.Log(CLASS_TYPE.Name, "DontLoadFramework is true.");
+                FLog.Info(CLASS_TYPE.Name, "DontLoadFramework is true.");
 
                 return;
             }

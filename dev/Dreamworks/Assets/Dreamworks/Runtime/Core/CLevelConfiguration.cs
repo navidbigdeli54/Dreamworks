@@ -3,6 +3,7 @@
 #pragma warning disable CS0649
 
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace DreamMachineGameStudio.Dreamworks.Core
 {
@@ -10,12 +11,13 @@ namespace DreamMachineGameStudio.Dreamworks.Core
     {
         #region Fields
         [SerializeField]
-        [ASubclassFilter(typeof(FGameMode))]
-        private FSubclass gameMode;
+        [SubclassFilter(typeof(FGameMode))]
+        [FormerlySerializedAs("gameMode")]
+        private FSubclass _gameMode;
         #endregion
 
         #region Properties
-        public FSubclass GameMode => gameMode;
+        public FSubclass GameMode => _gameMode;
         #endregion
     }
 }

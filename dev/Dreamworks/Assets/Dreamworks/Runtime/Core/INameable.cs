@@ -5,7 +5,7 @@ namespace DreamMachineGameStudio.Dreamworks.Core
     public interface INameable
     {
         #region Property
-        string Name { get; } 
+        FName Name { get; } 
         #endregion
     }
 }

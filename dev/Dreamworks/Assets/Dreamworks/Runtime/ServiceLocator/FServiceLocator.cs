@@ -11,11 +11,11 @@ namespace DreamMachineGameStudio.Dreamworks.ServiceLocator
         #region Fields
         public readonly static Type CLASS_TYPE = typeof(FServiceLocator);
 
-        private readonly static IDictionary<Type, object> registeredServices = new Dictionary<Type, object>();
+        private readonly static IDictionary<Type, object> _registeredServices = new Dictionary<Type, object>();
         #endregion
 
         #region Properties
-        public static IReadOnlyDictionary<Type, object> RegisteredServices => registeredServices as IReadOnlyDictionary<Type, object>;
+        public static IReadOnlyDictionary<Type, object> RegisteredServices => _registeredServices as IReadOnlyDictionary<Type, object>;
         #endregion
 
         #region Methods
@@ -32,11 +32,11 @@ namespace DreamMachineGameStudio.Dreamworks.ServiceLocator
 
             Type serviceType = typeof(TService);
 
-            FAssert.IsFalse(registeredServices.ContainsKey(serviceType), $"`{service.GetType().Name}` service is already registered.");
+            FAssert.IsFalse(_registeredServices.ContainsKey(serviceType), $"`{service.GetType().Name}` service is already registered.");
 
-            registeredServices.Add(serviceType, service);
+            _registeredServices.Add(serviceType, service);
 
-            FLog.Log(CLASS_TYPE.Name, $"`{serviceType.Name}` service has been registered. Service instance is `{service.GetType().Name}`.");
+            FLog.Info(CLASS_TYPE.Name, $"`{serviceType.Name}` service has been registered. Service instance is `{service.GetType().Name}`.");
         }
 
         /// <summary>
@@ -48,9 +48,9 @@ namespace DreamMachineGameStudio.Dreamworks.ServiceLocator
         {
             Type serviceType = typeof(TService);
 
-            FAssert.IsTrue(registeredServices.ContainsKey(serviceType), $"{serviceType.Name} service does not exist.");
+            FAssert.IsTrue(_registeredServices.ContainsKey(serviceType), $"{serviceType.Name} service does not exist.");
 
-            return registeredServices[serviceType] as TService;
+            return _registeredServices[serviceType] as TService;
         }
 
         public static void Remove<TService>() where TService : class
@@ -60,7 +60,7 @@ namespace DreamMachineGameStudio.Dreamworks.ServiceLocator
 
         public static void Remove(Type serviceType)
         {
-            registeredServices.Remove(serviceType);
+            _registeredServices.Remove(serviceType);
         }
         #endregion
     }

@@ -6,9 +6,9 @@ using DreamMachineGameStudio.Dreamworks.Debug;
 
 namespace DreamMachineGameStudio.Dreamworks.Variant
 {
-    [AName("Int")]
+    [NameAttribute("Int")]
     [Serializable]
-    public sealed class FInt : FValue<int>
+    public sealed class FInt : FVariant<int>
     {
         #region Constructors
         public FInt(int value) : base(value) { }
@@ -17,53 +17,53 @@ namespace DreamMachineGameStudio.Dreamworks.Variant
         #endregion
 
         #region Public Methods
-        public override bool Equals(object obj)
+        public override bool Equals(object other)
         {
-            FInt i = obj as FInt;
-            FAssert.IsNotNull(i, $"Given object is not an {nameof(FInt)}");
+            FInt castedOther = other as FInt;
+            FAssert.IsNotNull(castedOther, $"Other is not type of {nameof(FInt)}");
 
-            if (obj == null || i == null)
+            if (other == null || castedOther == null)
             {
                 return false;
             }
-            else if ((object)this == obj)
+            else if ((object)this == other)
             {
                 return true;
             }
             else
             {
-                return value == i.value;
+                return _value == castedOther._value;
             }
         }
 
         public override int GetHashCode()
         {
-            return value.GetHashCode();
+            return _value.GetHashCode();
         }
         #endregion
 
         #region Protected Methods
-        protected override bool Equals(IValue other)
+        protected override bool Equals(IVariant other)
         {
             FInt castedOther = other as FInt;
-            FAssert.IsNotNull(castedOther, "Other is not FBool type.");
+            FAssert.IsNotNull(castedOther, $"Other is not type of {nameof(FInt)}");
 
-            return this.value == castedOther.value;
+            return this._value == castedOther._value;
         }
 
-        protected override int CompareTo(IValue other)
+        protected override int CompareTo(IVariant other)
         {
             FInt castedOther = other as FInt;
-            FAssert.IsNotNull(castedOther, "Other is not FBool type.");
+            FAssert.IsNotNull(castedOther, $"Other is not type of {nameof(FInt)}");
 
-            return value.CompareTo(castedOther.value);
+            return _value.CompareTo(castedOther._value);
         }
         #endregion
 
         #region Operator Overloading
         public static implicit operator FInt(int i) => new FInt(i);
 
-        public static implicit operator int(FInt i) => i.value;
+        public static implicit operator int(FInt i) => i._value;
 
         public static bool operator ==(FInt lhs, FInt rhs) => Equals(rhs, lhs);
 
@@ -81,7 +81,7 @@ namespace DreamMachineGameStudio.Dreamworks.Variant
             }
             else
             {
-                return rhs.value == lhs.value;
+                return rhs._value == lhs._value;
             }
         }
         #endregion

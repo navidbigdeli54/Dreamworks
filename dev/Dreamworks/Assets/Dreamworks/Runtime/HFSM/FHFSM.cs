@@ -1,6 +1,5 @@
 ﻿/**Copyright 2016 - 2020, Dream Machine Game Studio. All Right Reserved.*/
 
-using System;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using DreamMachineGameStudio.Dreamworks.Core;
@@ -12,193 +11,164 @@ namespace DreamMachineGameStudio.Dreamworks.HFSM
     public sealed class FHFSM : IHFSM
     {
         #region Fields
-        private const int INVALID_INDEX = -1;
+        public readonly FBlackboard Blackboard;
 
-        private readonly CHFSMBrain owner;
+        public readonly CHFSMBrain Owner;
 
-        private readonly FBlackboard blackboard;
+        private IState _initialState;
 
-        private readonly List<IState> activeStatesHierarchy = new List<IState>();
+        private bool _isCheckingTransitions;
 
-        private readonly Dictionary<Type, IState> registeredStates = new Dictionary<Type, IState>();
+        private readonly List<IState> _activeStates = new List<IState>();
 
-        private readonly List<IState> pendingAddStates = new List<IState>();
+        private readonly List<IState> _activeStatesThisFrame = new List<IState>();
 
-        private bool isPreInitializing;
+        private readonly Dictionary<FName, IState> _pooledStates = new Dictionary<FName, IState>();
+
+        private readonly Queue<FTrigger> _pushedTriggers = new Queue<FTrigger>();
         #endregion
+
         #region Constructor
         public FHFSM(CHFSMBrain owner)
         {
-            this.owner = owner;
-            this.blackboard = new FBlackboard();
+            Owner = owner;
+            Blackboard = new FBlackboard();
+        }
+        #endregion
+
+        #region Properties
+        public IReadOnlyList<IState> ActiveStates => _activeStates;
+        #endregion
+
+        #region Public Methods
+        public void PushTrigger(FTrigger trigger)
+        {
+            _pushedTriggers.Enqueue(trigger);
+
+            if (_isCheckingTransitions == false)
+            {
+                _isCheckingTransitions = true;
+                CheckTransitions();
+                _isCheckingTransitions = false;
+            }
+        }
+
+        public void AddState(IState state)
+        {
+            FAssert.IsFalse(_pooledStates.ContainsKey(state.Name), $"State `{state.Name}` is already exist in HFSM.");
+
+            _pooledStates.Add(state.Name, state);
+            state.SetMachine(this);
+
+            for (int i = 0; i < state.Children.Count; ++i)
+            {
+                AddState(state.Children[i]);
+            }
+        }
+
+        public void SetInitialState(IState initialState)
+        {
+            _initialState = initialState;
+        }
+
+        public void Start()
+        {
+            EnterHierarhcyFromClosestCommonAncestor(null, new FTransition(_initialState));
         }
         #endregion
 
         #region Private Methods
-        private void ActiveState(IState from, IState target, FStringId trigger)
+        private void CheckTransitions()
         {
-            if (from != null)
+            while (_pushedTriggers.Count != 0)
             {
-                ExitStateHierarchyTo(from, target);
-            }
+                FTrigger trigger = _pushedTriggers.Dequeue();
 
-            EnterStateHierarchyFrom(from, target, trigger);
-
-            if (target.IsActive == false) return;
-
-            if (trigger != null)
-            {
-                ITransition transaction = target.CheckTransactions(trigger);
-
-                if (transaction != null)
+                for (int i = 0; i < _activeStates.Count; ++i)
                 {
-                    transaction.PerformActions();
+                    IState state = _activeStates[i];
 
-                    ActiveState(target, transaction.Target, trigger);
-                }
-            }
-        }
+                    ITransition transition = state.CheckTransitions(trigger);
 
-        private void EnterStateHierarchyFrom(IState from, IState target, FStringId trigger)
-        {
-            FAssert.IsNotNull(target, "Target state can't be null.");
-
-            List<IState> statesToEnter = new List<IState>();
-
-            IReadOnlyList<IState> ancestors = target.GetAncestors();
-            for (int i = ancestors.Count - 1; i >= 0; i--)
-            {
-                IState currentState = ancestors[i];
-
-                if (from != null && from.IsAncestor(currentState)) continue;
-
-                statesToEnter.Add(currentState);
-            }
-
-            for (int i = 0; i < statesToEnter.Count; i++)
-            {
-                EnterState(statesToEnter[i], trigger);
-            }
-
-            EnterSubstates(target, trigger);
-        }
-
-        private void EnterSubstates(IState state, FStringId trigger)
-        {
-            if (state.IsActive == false) return;
-
-            if (state is IParallelState parallelState)
-            {
-                IReadOnlyList<IState> substates = parallelState.Substates;
-                for (int i = 0; i < substates.Count; i++)
-                {
-                    IState currentState = substates[i];
-                    EnterState(currentState, trigger);
-                    EnterSubstates(currentState, trigger);
-                }
-            }
-            else if (state is IStateChildren stateChildren)
-            {
-                IReadOnlyList<IState> children = stateChildren.Children;
-
-                for (int i = 0; i < children.Count; i++)
-                {
-                    if (children[i] is FInitialState initialState)
+                    if (transition != null)
                     {
-                        EnterState(initialState, trigger);
-                        EnterSubstates(initialState, trigger);
+                        if (transition.Target is IHistoryState historyState)
+                        {
+                            if (historyState.LastState == null)
+                            {
+                                FAssert.IsNotNull(historyState.Parent, $"`{historyState.Name}` parent is null. A history state should always have parent!");
+                                historyState.LastState = historyState.Parent.InitialState;
+                            }
+
+                            FireTransition(state, new FTransition(transition.Trigger, historyState.LastState, transition.Condition, transition.Actions));
+                        }
+                        else
+                        {
+                            FireTransition(state, transition);
+                        }
+
                         break;
                     }
                 }
             }
         }
 
-        private void EnterState(IState state, FStringId trigger)
+        private void FireTransition(IState source, ITransition transition)
         {
-            state.OnEnter();
+            FAssert.IsTrue(_pooledStates.ContainsKey(transition.Target.Name), $"{transition.Target.Name} is not exist in this machine.");
 
-            activeStatesHierarchy.Add(state);
+            ExitHierarchyToClosestCommonAncestor(source, transition);
+            transition.PerformActions();
+            EnterHierarhcyFromClosestCommonAncestor(source, transition);
+        }
 
-            if (trigger != null)
+        private void ExitHierarchyToClosestCommonAncestor(IState source, ITransition transition)
+        {
+            IReadOnlyList<IState> hierarchyToExit = GetOverallHierarchyToExit(source, transition.Target);
+
+            for (int i = 0; i < hierarchyToExit.Count; ++i)
             {
-                ITransition transaction = state.CheckTransactions(trigger);
-
-                if (transaction != null)
-                {
-                    transaction.PerformActions();
-
-                    ActiveState(state, transaction.Target, trigger);
-                }
+                ExitState(hierarchyToExit[i]);
             }
         }
 
-        private void ExitStateHierarchyTo(IState from, IState target)
+        private IReadOnlyList<IState> GetOverallHierarchyToExit(IState source, IState target)
         {
-            FAssert.IsNotNull(from, $"From state can't be null.");
-
-            if (from is IParallelState parallelState)
-            {
-                for (int i = 0; i < parallelState.Substates.Count; i++)
-                {
-                    ExitStateHierarchyTo(parallelState.Substates[i], target);
-                }
-            }
-            else
-            {
-                IReadOnlyList<IState> ancestors = from.GetAncestors();
-                for (int i = 0; i < ancestors.Count; i++)
-                {
-                    IState currentState = ancestors[i];
-
-                    if (target.IsAncestor(currentState)) break;
-
-                    ExitSubstates(currentState, target);
-
-                    ExitState(currentState, target);
-                }
-            }
-        }
-
-        private void ExitSubstates(IState state, IState target)
-        {
-            IReadOnlyList<IState> activeStatesAfter = GetReversedActiveStatesAfter(state);
-
-            for (int i = 0; i < activeStatesAfter.Count; i++)
-            {
-                IState currentState = activeStatesAfter[i];
-
-                if (target != null && target.IsAncestor(currentState)) continue;
-
-                ExitState(currentState, target);
-            }
-        }
-
-        private void ExitState(IState from, IState to)
-        {
-            FAssert.IsNotNull(from, "From state can't be null");
-
-            if (from is IParallelState)
-            {
-                ExitSubstates(from, to);
-            }
-
-            from.OnExit();
-
-            activeStatesHierarchy.Remove(from);
-        }
-
-        private IReadOnlyList<IState> GetReversedActiveStatesAfter(IState state)
-        {
-            int index = activeStatesHierarchy.IndexOf(state);
-            FAssert.IsFalse(index == INVALID_INDEX, $"{state.Name} is not active.");
-
             List<IState> result = new List<IState>();
 
-            for (int i = activeStatesHierarchy.Count - 1; i >= index; i--)
+            IReadOnlyList<IState> sourceAncestors = source.GetAncestors(); // Returns the source itself too!
+            for (int i = 0; i < sourceAncestors.Count; ++i)
             {
-                IState activeState = activeStatesHierarchy[i];
+                IState ancestor = sourceAncestors[i];
+                if (target.HasAsAncestor(ancestor))
+                {
+                    // We have reached to the common ancestor of source and target state, so should not proceed further.
+                    break;
+                }
 
-                if (activeState.IsAncestor(state))
+                IReadOnlyList<IState> activeChildrenState = GetActiveChildrenStates(ancestor);
+                for (int j = 0; j < activeChildrenState.Count; ++j)
+                {
+                    IState state = activeChildrenState[j];
+                    if (result.Contains(state) == false)
+                    {
+                        result.Add(state);
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        private IReadOnlyList<IState> GetActiveChildrenStates(IState state)
+        {
+            List<IState> result = new List<IState>();
+
+            for (int i = _activeStates.Count - 1; i >= 0; --i)
+            {
+                IState activeState = ActiveStates[i];
+
+                if (activeState.HasAsAncestor(state) || activeState == state)
                 {
                     result.Add(activeState);
                 }
@@ -206,149 +176,183 @@ namespace DreamMachineGameStudio.Dreamworks.HFSM
 
             return result;
         }
-        #endregion
 
-        #region IHFSM Implementation
-        CHFSMBrain IHFSM.Owner => owner;
-
-        FBlackboard IHFSM.Blackboard => blackboard;
-
-        void IHFSM.PushTrigger(FStringId trigger)
+        private void ExitState(IState state)
         {
-            FAssert.IsTrue(trigger != null, $"Invalid trigger");
+            state.OnExit();
+            _activeStates.Remove(state);
+        }
 
-            for (int i = 0; i < activeStatesHierarchy.Count; i++)
+        private void EnterHierarhcyFromClosestCommonAncestor(IState source, ITransition transition)
+        {
+            IReadOnlyList<IState> hierarchyToEnter = GetOverallHierarchyToEnter(source, transition.Target);
+
+            for (int i = 0; i < hierarchyToEnter.Count; ++i)
             {
-                IState state = activeStatesHierarchy[i];
+                EnterState(hierarchyToEnter[i], transition);
+            }
+        }
 
-                ITransition transaction = state.CheckTransactions(trigger);
+        private IReadOnlyList<IState> GetOverallHierarchyToEnter(IState source, IState target)
+        {
+            List<IState> result = new List<IState>();
 
-                if (transaction != null)
+            IReadOnlyList<IState> targetAncestors = target.GetAncestors(); // Returns the source itself too!
+
+            // We should enter to states from top to down, so we loop through ancestors backward.
+            for (int i = targetAncestors.Count - 1; i >= 0; --i)
+            {
+                IState ancestor = targetAncestors[i];
+
+                // Ignore common ancestors.
+                if (source != null && source.HasAsAncestor(ancestor))
                 {
-                    transaction.PerformActions();
+                    continue;
+                }
 
-                    ActiveState(state, transaction.Target, trigger);
+                result.AddRange(GetStateHierarchyToEnter(ancestor, target));
+            }
 
-                    return;
+            return result;
+        }
+
+        private IReadOnlyList<IState> GetStateHierarchyToEnter(IState state, IState target)
+        {
+            List<IState> result = new List<IState>
+            {
+                state
+            };
+
+            if (state is IParallelState parallelState)
+            {
+                result.AddRange(GetParallelStateHierarhcyToEnter(parallelState, target));
+            }
+            else if (target.HasAsAncestor(state) == false && state.InitialState != null)
+            {
+                //We should activate initialState of states that are NOT on the path to target.
+                result.AddRange(GetStateHierarchyToEnter(state.InitialState, target));
+            }
+
+            return result;
+        }
+
+        private IReadOnlyList<IState> GetParallelStateHierarhcyToEnter(IParallelState parallelState, IState target)
+        {
+            List<IState> result = new List<IState>();
+
+            for (int i = 0; i < parallelState.Children.Count; ++i)
+            {
+                IState child = parallelState.Children[i];
+
+                // Ignore parallel children on the path to target, they will be handled on top level functions.
+                if (child == target || target.HasAsAncestor(child))
+                {
+                    continue;
+                }
+
+                result.AddRange(GetStateHierarchyToEnter(child, target));
+            }
+
+            return result;
+        }
+
+        private void EnterState(IState state, ITransition transition)
+        {
+            _activeStates.Add(state);
+            state.OnEnter();
+
+            if (transition != null && transition.Trigger == FTrigger.Empty)
+            {
+                ITransition newTransition = state.CheckTransitions(FTrigger.Empty);
+                if (newTransition != null)
+                {
+                    FireTransition(state, newTransition);
                 }
             }
         }
 
-        void IHFSM.AddState<TState>(IState state)
+        private void SyncActiveStatesThisFrame()
         {
-            FAssert.IsNotNull(state, "State can't be null");
-
-            Type type = state.GetType();
-
-            FAssert.IsFalse(registeredStates.ContainsKey(type), $"{state.Name} has already added into the HFSM");
-
-            if (isPreInitializing)
-            {
-                pendingAddStates.Add(state);
-            }
-            else
-            {
-                registeredStates.Add(type, state);
-            }
-        }
-
-        TState IHFSM.GetState<TState>()
-        {
-            Type stateType = typeof(TState);
-
-            FAssert.IsTrue(registeredStates.ContainsKey(stateType), $"There is not state with {stateType.Name} type in HFSM.");
-
-            return (TState)registeredStates[stateType];
-        }
-
-        void IHFSM.Initial<TState>()
-        {
-            Type stateType = typeof(TState);
-
-            FAssert.IsTrue(registeredStates.ContainsKey(stateType), $"There is not state with {stateType.Name} type in HFSM.");
-
-            IState initialState = registeredStates[stateType];
-
-            ActiveState(null, initialState, null);
+            _activeStatesThisFrame.Clear();
+            _activeStatesThisFrame.AddRange(_activeStates);
         }
         #endregion
 
         #region INameable Implementation
-        string INameable.Name => owner.name;
+        FName INameable.Name => Owner.name;
         #endregion
 
-        #region IPureInitializable Implementation
-        async Task IPureInitializable.PreInitializeAsync()
+        #region IInitializable Implementation
+        async Task IInitializable.PreInitializeAsync()
         {
-            isPreInitializing = true;
-
-            foreach (KeyValuePair<Type, IState> state in registeredStates)
+            foreach (KeyValuePair<FName, IState> statePair in _pooledStates)
             {
-                await state.Value.PreInitializeAsync();
-            }
-
-            for (int i = 0; i < pendingAddStates.Count; i++)
-            {
-                IState state = pendingAddStates[i];
-
-                await state.PreInitializeAsync();
-
-                FAssert.IsFalse(registeredStates.ContainsKey(state.GetType()), $"A state with type {state.GetType()} is already exist.");
-
-                registeredStates.Add(state.GetType(), state);
-            }
-
-            isPreInitializing = false;
-        }
-
-        async Task IPureInitializable.InitializeAsync()
-        {
-            foreach (KeyValuePair<Type, IState> state in registeredStates)
-            {
-                await state.Value.InitializeAsync();
+                await statePair.Value.PreInitializeAsync();
             }
         }
 
-        async Task IPureInitializable.BeginPlayAsync()
+        async Task IInitializable.InitializeAsync()
         {
-            foreach (KeyValuePair<Type, IState> state in registeredStates)
+            foreach (KeyValuePair<FName, IState> statePair in _pooledStates)
             {
-                await state.Value.BeginPlayAsync();
+                await statePair.Value.InitializeAsync();
             }
         }
 
-        async Task IPureInitializable.UninitializeAsync()
+        async Task IInitializable.BeginPlayAsync()
         {
-            foreach (KeyValuePair<Type, IState> state in registeredStates)
+            foreach (KeyValuePair<FName, IState> statePair in _pooledStates)
             {
-                await state.Value.UninitializeAsync();
+                await statePair.Value.BeginPlayAsync();
+            }
+        }
+
+        async Task IInitializable.UninitializeAsync()
+        {
+            foreach (KeyValuePair<FName, IState> statePair in _pooledStates)
+            {
+                await statePair.Value.UninitializeAsync();
             }
         }
         #endregion
 
-        #region IPureTickable Implementation
+        #region ITickable Implementation
 
-        void IPureTickable.Tick(float deltaTime)
+        void ITickable.Tick(float deltaTime)
         {
-            for (int i = 0; i < activeStatesHierarchy.Count; i++)
+            SyncActiveStatesThisFrame();
+
+            for (int i = 0; i < _activeStatesThisFrame.Count; ++i)
             {
-                activeStatesHierarchy[i].Tick(deltaTime);
+                IState state = _activeStatesThisFrame[i];
+                if (state.IsActive)
+                {
+                    state.Tick(deltaTime);
+                }
             }
         }
 
-        void IPureTickable.LateTick(float deltaTime)
+        void ITickable.LateTick(float deltaTime)
         {
-            for (int i = 0; i < activeStatesHierarchy.Count; i++)
+            for (int i = 0; i < _activeStatesThisFrame.Count; ++i)
             {
-                activeStatesHierarchy[i].LateTick(deltaTime);
+                IState state = _activeStatesThisFrame[i];
+                if (state.IsActive)
+                {
+                    state.LateTick(deltaTime);
+                }
             }
         }
 
-        void IPureTickable.FixedTick(float deltaTime)
+        void ITickable.FixedTick(float fixedDeltaTime)
         {
-            for (int i = 0; i < activeStatesHierarchy.Count; i++)
+            for (int i = 0; i < _activeStatesThisFrame.Count; ++i)
             {
-                activeStatesHierarchy[i].FixedTick(deltaTime);
+                IState state = _activeStatesThisFrame[i];
+                if (state.IsActive)
+                {
+                    state.FixedTick(fixedDeltaTime);
+                }
             }
         }
         #endregion

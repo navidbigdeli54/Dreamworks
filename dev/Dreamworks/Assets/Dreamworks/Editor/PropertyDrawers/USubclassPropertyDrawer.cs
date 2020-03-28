@@ -15,36 +15,36 @@ namespace DreamMachineGameStudio.Dreamworks.Editor
     public class USubclassPropertyDrawer : PropertyDrawer
     {
         #region Fields
-        private string[] typeFullNames;
-        private string[] displaynames;
-        private int selectedIndex;
+        private string[] _typeFullNames;
+        private string[] _displaynames;
+        private int _selectedIndex;
         #endregion
 
         #region Editor Methods
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-            var nameProperty = property.FindPropertyRelative("fullName");
+            var nameProperty = property.FindPropertyRelative("_fullName");
 
-            if (displaynames == null)
+            if (_displaynames == null)
             {
                 CacheTypeNames();
 
-                if (displaynames != null && displaynames.Length > 0)
+                if (_displaynames != null && _displaynames.Length > 0)
                 {
-                    selectedIndex = Array.IndexOf(displaynames, nameProperty.stringValue);
+                    _selectedIndex = Array.IndexOf(_displaynames, nameProperty.stringValue);
 
-                    if (selectedIndex == -1) selectedIndex = 0;
+                    if (_selectedIndex == -1) _selectedIndex = 0;
                 }
             }
 
             Vector2 lableSize = GUI.skin.label.CalcSize(label);
 
             EditorGUI.LabelField(new Rect(position.x, position.y, lableSize.x, position.height), label);
-            selectedIndex = EditorGUI.Popup(new Rect(position.x + lableSize.x + 5, position.y, position.width - lableSize.x - 5, position.height), selectedIndex, displaynames);
+            _selectedIndex = EditorGUI.Popup(new Rect(position.x + lableSize.x + 5, position.y, position.width - lableSize.x - 5, position.height), _selectedIndex, _displaynames);
 
-            if (displaynames != null && displaynames.Length > 0)
+            if (_displaynames != null && _displaynames.Length > 0)
             {
-                nameProperty.stringValue = typeFullNames[selectedIndex];
+                nameProperty.stringValue = _typeFullNames[_selectedIndex];
             }
         }
         #endregion
@@ -52,14 +52,14 @@ namespace DreamMachineGameStudio.Dreamworks.Editor
         #region Private Methods
         private void CacheTypeNames()
         {
-            if (fieldInfo.IsDefined(ASubclassFilter.CLASS_TYPE))
+            if (fieldInfo.IsDefined(SubclassFilterAttribute.CLASS_TYPE))
             {
-                Attribute attribute = fieldInfo.GetCustomAttribute(ASubclassFilter.CLASS_TYPE);
-                PropertyInfo typePropertyInfo = attribute.GetType().GetProperty(nameof(ASubclassFilter.Type));
+                Attribute attribute = fieldInfo.GetCustomAttribute(SubclassFilterAttribute.CLASS_TYPE);
+                PropertyInfo typePropertyInfo = attribute.GetType().GetProperty(nameof(SubclassFilterAttribute.Type));
                 Type typeFilter = (Type)typePropertyInfo.GetValue(attribute);
                 IEnumerable<Type> subtypes = FReflectionUtility.GetSubTypesOf(typeFilter);
-                typeFullNames = subtypes.Select(x => x.FullName).ToArray();
-                displaynames = subtypes.Select(x => FReflectionUtility.HasDefinedAttribute(x, AName.CLASS_TYPE) ? FReflectionUtility.GetAttributeProperty<string>(x, AName.CLASS_TYPE, nameof(AName.Name)) : x.FullName).ToArray();
+                _typeFullNames = subtypes.Select(x => x.FullName).ToArray();
+                _displaynames = subtypes.Select(x => FReflectionUtility.HasDefinedAttribute(x, NameAttribute.CLASS_TYPE) ? FReflectionUtility.GetAttributeProperty<string>(x, NameAttribute.CLASS_TYPE, nameof(NameAttribute.Name)) : x.FullName).ToArray();
             }
         }
 

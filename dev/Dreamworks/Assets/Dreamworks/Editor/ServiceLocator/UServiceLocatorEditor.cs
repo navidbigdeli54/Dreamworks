@@ -11,7 +11,7 @@ namespace DreamMachineGameStudio.Dreamworks.Editor.ServiceLocator
     public class UServiceLocatorEditor : EditorWindow
     {
         #region Fields
-        private Vector3 scrollPosition;
+        private Vector3 _scrollPosition;
         #endregion
 
         #region Methods
@@ -24,7 +24,7 @@ namespace DreamMachineGameStudio.Dreamworks.Editor.ServiceLocator
             EditorGUILayout.LabelField("Instance");
             EditorGUILayout.EndHorizontal();
 
-            scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition);
+            _scrollPosition = EditorGUILayout.BeginScrollView(_scrollPosition);
             foreach (var item in FServiceLocator.RegisteredServices)
             {
                 EditorGUILayout.BeginHorizontal(GUI.skin.box);

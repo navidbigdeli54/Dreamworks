@@ -14,7 +14,7 @@ namespace DreamMachineGameStudio.Dreamworks.Editor.EventManager
     public class UEventManagerEditor : EditorWindow
     {
         #region Fields
-        private Vector3 scrollPosition;
+        private Vector3 _scrollPosition;
         #endregion
 
         #region Private Methods
@@ -27,7 +27,7 @@ namespace DreamMachineGameStudio.Dreamworks.Editor.EventManager
             EditorGUILayout.LabelField("Listeners");
             EditorGUILayout.EndHorizontal();
 
-            scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition);
+            _scrollPosition = EditorGUILayout.BeginScrollView(_scrollPosition);
             foreach (KeyValuePair<FStringId, FEventManager.DEventSubscriber> item in FEventManager.Events)
             {
                 EditorGUILayout.BeginHorizontal(GUI.skin.box);

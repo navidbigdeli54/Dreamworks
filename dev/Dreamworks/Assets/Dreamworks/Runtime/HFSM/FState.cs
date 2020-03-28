@@ -9,33 +9,113 @@ using DreamMachineGameStudio.Dreamworks.Debug;
 
 namespace DreamMachineGameStudio.Dreamworks.HFSM
 {
-    public abstract class FState : IState, IStateChildren
+    public abstract class FState : IState
     {
         #region Fields
-        private bool isActive;
+        private IState _initialState;
 
-        private readonly string name;
+        private IHistoryState _historyState;
 
-        private readonly List<IState> children = new List<IState>();
+        private readonly FName _name;
 
-        private readonly List<ITransition> transitions = new List<ITransition>();
+        private readonly List<IState> _children = new List<IState>();
+
+        private readonly List<ITransition> _transitions = new List<ITransition>();
         #endregion
 
         #region Constructor
-        public FState(IHFSM hfsm)
+        public FState()
         {
-            this.HFSM = hfsm;
-            this.name = this.GetType().Name;
+            _name = GetType().Name;
+        }
+
+        public FState(string name)
+        {
+            _name = name;
+        }
+
+        public FState(IState parent) : this()
+        {
+            parent.AddChild(this);
+            Parent = parent;
+        }
+
+        public FState(string name, IState parent) : this(parent)
+        {
+            _name = name;
         }
         #endregion
 
         #region Properties
-        public IHFSM HFSM { get; }
+        public FHFSM Machine { get; private set; }
+
+        public bool IsActive { get; private set; }
 
         protected IState Parent { get; private set; }
         #endregion
 
-        #region Methods
+        #region Public Methods
+        public override string ToString() => _name;
+
+        public void SetInitialState(IState initialState) => _initialState = initialState;
+
+        public void AddTransition(FTrigger trigger, IState target)
+        {
+            FAssert.IsTrue(trigger != null, "Trigger is invalid.");
+            FAssert.IsNotNull(target, $"Target state can't be null.");
+
+            _transitions.Add(new FTransition(trigger, target));
+        }
+
+        public void AddTransition(FTrigger trigger, IState target, ICondition condition)
+        {
+            FAssert.IsTrue(trigger != null, "Trigger is invalid.");
+            FAssert.IsNotNull(target, $"Target state can't be null.");
+            FAssert.IsNotNull(condition, "Condition can't be null");
+
+            _transitions.Add(new FTransition(trigger, target, condition));
+        }
+
+        public void AddTransition(FTrigger trigger, IState target, ITransitionAction action)
+        {
+            FAssert.IsTrue(trigger != null, "Trigger is invalid.");
+            FAssert.IsNotNull(target, $"Target state can't be null.");
+            FAssert.IsNotNull(action, "Action can't be null");
+
+            _transitions.Add(new FTransition(trigger, target, action));
+        }
+
+        public void AddTransition(FTrigger trigger, IState target, IEnumerable<ITransitionAction> actions)
+        {
+            FAssert.IsTrue(trigger != null, "Trigger is invalid.");
+            FAssert.IsNotNull(target, $"Target state can't be null.");
+            FAssert.IsNotNull(actions, "Actions can't be null");
+
+            _transitions.Add(new FTransition(trigger, target, actions));
+        }
+
+        public void AddTransition(FTrigger trigger, IState target, ICondition condition, ITransitionAction action)
+        {
+            FAssert.IsTrue(trigger != null, "Trigger is invalid.");
+            FAssert.IsNotNull(target, $"Target state can't be null.");
+            FAssert.IsNotNull(condition, $"Condition can't be null.");
+            FAssert.IsNotNull(action, "Action can't be null");
+
+            _transitions.Add(new FTransition(trigger, target, condition, action));
+        }
+
+        public void AddTransition(FTrigger trigger, IState target, ICondition condition, IEnumerable<ITransitionAction> actions)
+        {
+            FAssert.IsTrue(trigger != null, "Trigger is invalid.");
+            FAssert.IsNotNull(target, $"Target state can't be null.");
+            FAssert.IsNotNull(condition, $"Condition can't be null.");
+            FAssert.IsNotNull(actions, "Actions can't be null");
+
+            _transitions.Add(new FTransition(trigger, target, condition, actions));
+        }
+        #endregion
+
+        #region Protected Methods
         protected virtual void OnEnter() { }
 
         protected virtual void OnExit() { }
@@ -52,111 +132,44 @@ namespace DreamMachineGameStudio.Dreamworks.HFSM
 
         protected virtual void LateTick(float deltaTime) { }
 
-        protected virtual void FixedTick(float deltaTime) { }
-
-        protected void AddChild<T>(IState child) where T : IState
-        {
-            FAssert.IsNotNull(child, "Child can't be null.");
-
-            ((FState)child).Parent = this;
-            children.Add(child);
-            HFSM.AddState<T>(child);
-        }
-
-        protected void AddTransition<TState>(FStringId trigger) where TState : class, IState
-        {
-            TState target = HFSM.GetState<TState>();
-
-            FAssert.IsTrue(trigger != null, "Trigger is invalid.");
-            FAssert.IsNotNull(target, $"Target state can't be null.");
-
-            transitions.Add(new FTransition(trigger, target));
-        }
-
-        protected void AddTransition<TState>(FStringId trigger, ICondition condition) where TState : class, IState
-        {
-            TState target = HFSM.GetState<TState>();
-
-            FAssert.IsTrue(trigger != null, "Trigger is invalid.");
-            FAssert.IsNotNull(target, $"Target state can't be null.");
-            FAssert.IsNotNull(condition, "Condition can't be null");
-
-            transitions.Add(new FTransition(trigger, target, condition));
-        }
-
-        protected void AddTransition<TState>(FStringId trigger, ITransitionAction action) where TState : class, IState
-        {
-            TState target = HFSM.GetState<TState>();
-
-            FAssert.IsTrue(trigger != null, "Trigger is invalid.");
-            FAssert.IsNotNull(target, $"Target state can't be null.");
-            FAssert.IsNotNull(action, "Action can't be null");
-
-            transitions.Add(new FTransition(trigger, target, action));
-        }
-
-        protected void AddTransition<TState>(FStringId trigger, IEnumerable<ITransitionAction> actions) where TState : class, IState
-        {
-            TState target = HFSM.GetState<TState>();
-
-            FAssert.IsTrue(trigger != null, "Trigger is invalid.");
-            FAssert.IsNotNull(target, $"Target state can't be null.");
-            FAssert.IsNotNull(actions, "Actions can't be null");
-
-            transitions.Add(new FTransition(trigger, target, actions));
-        }
-
-        protected void AddTransition<TState>(FStringId trigger, ICondition condition, ITransitionAction action) where TState : class, IState
-        {
-            TState target = HFSM.GetState<TState>();
-
-            FAssert.IsTrue(trigger != null, "Trigger is invalid.");
-            FAssert.IsNotNull(target, $"Target state can't be null.");
-            FAssert.IsNotNull(condition, $"Condition can't be null.");
-            FAssert.IsNotNull(action, "Action can't be null");
-
-            transitions.Add(new FTransition(trigger, target, condition, action));
-        }
-
-        protected void AddTransition<TState>(FStringId trigger, ICondition condition, IEnumerable<ITransitionAction> actions) where TState : class, IState
-        {
-            TState target = HFSM.GetState<TState>();
-
-            FAssert.IsTrue(trigger != null, "Trigger is invalid.");
-            FAssert.IsNotNull(target, $"Target state can't be null.");
-            FAssert.IsNotNull(condition, $"Condition can't be null.");
-            FAssert.IsNotNull(actions, "Actions can't be null");
-
-            transitions.Add(new FTransition(trigger, target, condition, actions));
-        }
+        protected virtual void FixedTick(float fixedDeltaTime) { }
         #endregion
 
         #region IState Implementation
         IState IState.Parent => Parent;
 
-        bool IState.IsActive => isActive;
+        IState IState.InitialState => _initialState;
+
+        IHistoryState IState.HistoryState => _historyState;
+
+        IReadOnlyList<IState> IState.Children => _children;
 
         void IState.OnEnter()
         {
-            isActive = true;
+            IsActive = true;
+
+            if (Parent != null && Parent.HistoryState != null)
+            {
+                Parent.HistoryState.LastState = this;
+            }
 
             OnEnter();
         }
 
         void IState.OnExit()
         {
-            isActive = false;
+            IsActive = false;
 
             OnExit();
         }
 
-        ITransition IState.CheckTransactions(FStringId trigger)
+        ITransition IState.CheckTransitions(FTrigger trigger)
         {
-            for (int i = 0; i < transitions.Count; i++)
+            for (int i = 0; i < _transitions.Count; i++)
             {
-                ITransition transaction = transitions[i];
+                ITransition transaction = _transitions[i];
 
-                if (transaction.Trigger == trigger && transaction.CheckCondition())
+                if (transaction.IsTriggered(trigger))
                 {
                     return transaction;
                 }
@@ -165,60 +178,81 @@ namespace DreamMachineGameStudio.Dreamworks.HFSM
             return null;
         }
 
-        IReadOnlyList<IState> IState.GetAncestors()
-        {
-            List<IState> ancestors = new List<IState>();
-
-            IState currentState = this;
-            do
-            {
-                ancestors.Add(currentState);
-                currentState = currentState.Parent;
-            } while (currentState != null);
-
-            return ancestors;
-        }
-
-        bool IState.IsAncestor(IState state)
+        bool IState.HasAsAncestor(IState state)
         {
             FAssert.IsNotNull(state, "State parameter can't be null.");
 
-            IState currentState = this;
-            while (currentState.Parent != null)
+            IState currentState = Parent;
+            while (currentState != null)
             {
-                if (currentState.Parent == state) return true;
+                if (currentState == state) return true;
 
                 currentState = currentState.Parent;
             }
 
             return false;
         }
-        #endregion
 
-        #region IStateChildren Implementation
-        IReadOnlyList<IState> IStateChildren.Children => children;
+        IReadOnlyList<IState> IState.GetAncestors()
+        {
+            List<IState> ancestors = new List<IState>();
+            IState current = this;
+            do
+            {
+                ancestors.Add(current);
+                current = current.Parent;
+            } while (current != null);
+
+            return ancestors;
+        }
+
+        void IState.SetMachine(IHFSM machine)
+        {
+            Machine = (FHFSM)machine;
+        }
+
+        void IState.SetParent(IState parent)
+        {
+            Parent = parent;
+        }
+
+        void IState.AddChild(IState child)
+        {
+            FAssert.IsFalse(_children.Contains(child) || _historyState == child, $"`{child.Name}` is already child of `{_name}` state.");
+
+            if (child is IHistoryState historyState)
+            {
+                _historyState = historyState;
+            }
+            else
+            {
+                _children.Add(child);
+            }
+
+            child.SetParent(this);
+        }
         #endregion
 
         #region INameable Implementation
-        string INameable.Name => name;
+        FName INameable.Name => _name;
         #endregion
 
-        #region IPureTickable Implementation
-        void IPureTickable.Tick(float deltaTime) => Tick(deltaTime);
+        #region IInitializable Implementation
+        Task IInitializable.PreInitializeAsync() => PreInitializeAsync();
 
-        void IPureTickable.LateTick(float deltaTime) => LateTick(deltaTime);
+        Task IInitializable.InitializeAsync() => InitializeAsync();
 
-        void IPureTickable.FixedTick(float deltaTime) => FixedTick(deltaTime);
+        Task IInitializable.BeginPlayAsync() => BeginPlayAsync();
+
+        Task IInitializable.UninitializeAsync() => UninitializeAsync();
         #endregion
 
-        #region IPureInitializable Implementation
-        Task IPureInitializable.PreInitializeAsync() => PreInitializeAsync();
+        #region ITickable Implementation
+        void ITickable.Tick(float deltaTime) => Tick(deltaTime);
 
-        Task IPureInitializable.InitializeAsync() => InitializeAsync();
+        void ITickable.LateTick(float deltaTime) => LateTick(deltaTime);
 
-        Task IPureInitializable.BeginPlayAsync() => BeginPlayAsync();
-
-        Task IPureInitializable.UninitializeAsync() => UninitializeAsync();
+        void ITickable.FixedTick(float fixedDeltaTime) => FixedTick(fixedDeltaTime);
         #endregion
     }
 }

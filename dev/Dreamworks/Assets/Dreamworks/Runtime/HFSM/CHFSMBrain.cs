@@ -9,8 +9,12 @@ namespace DreamMachineGameStudio.Dreamworks.HFSM
 {
     public abstract class CHFSMBrain : CComponent
     {
+        #region Fields
+        private IHFSM _hfsm;
+        #endregion
+
         #region Properties
-        protected IHFSM HFSM { get; private set; }
+        protected FHFSM Machine { get; private set; }
         #endregion
 
         #region Methods
@@ -18,53 +22,58 @@ namespace DreamMachineGameStudio.Dreamworks.HFSM
         {
             await base.PreInitializeComponenetAsync();
 
-            HFSM = new FHFSM(this);
+            CanEverTick = true;
+
+            CanEverLateTick = true;
+
+            Machine = new FHFSM(this);
+            _hfsm = Machine;
 
             await SetupHFSM();
 
-            await HFSM.PreInitializeAsync();
+            await _hfsm.PreInitializeAsync();
         }
 
         protected async override Task InitializeComponentAsync()
         {
             await base.InitializeComponentAsync();
 
-            await HFSM.InitializeAsync();
+            await _hfsm.InitializeAsync();
         }
 
         protected async override Task BeginPlayAsync()
         {
             await base.BeginPlayAsync();
 
-            await HFSM.BeginPlayAsync();
+            await _hfsm.BeginPlayAsync();
         }
 
         protected async override Task UninitializeCompoonentAsync()
         {
             await base.UninitializeCompoonentAsync();
 
-            await HFSM.UninitializeAsync();
+            await _hfsm.UninitializeAsync();
         }
 
         protected override void TickComponent(float deltaTime)
         {
             base.TickComponent(deltaTime);
 
-            HFSM.Tick(deltaTime);
+            _hfsm.Tick(deltaTime);
         }
 
         protected override void LateTickComponent(float deltaTime)
         {
             base.LateTickComponent(deltaTime);
 
-            HFSM.LateTick(deltaTime);
+            _hfsm.LateTick(deltaTime);
         }
 
         protected override void FixedTickComponent(float deltaTime)
         {
             base.FixedTickComponent(deltaTime);
 
-            HFSM.FixedTick(deltaTime);
+            _hfsm.FixedTick(deltaTime);
         }
 
         protected abstract Task SetupHFSM();

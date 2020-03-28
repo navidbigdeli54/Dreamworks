@@ -2,38 +2,31 @@
 
 namespace DreamMachineGameStudio.Dreamworks.Core
 {
-    public interface ITickable : IPureTickable
+    public interface ITickable : INameable
     {
-        #region Property
+        #region Methods
         /// <summary>
-        /// If true, this component will get Tick after all objects have been initialized.
+        /// Tick is called every frame.
+        /// Tick is the most commonly used function to implement any kind of game behavior.
         /// </summary>
-        bool CanEverTick { get; }
+        /// <param name="deltaTime">The time in seconds it took to complete the last frame.</param>
+        void Tick(float deltaTime);
 
         /// <summary>
-        /// If true, this component will get LateTick after all objects have been initialized.
+        /// LateTick is called every frame.
+        /// LateTick is called after all Tick functions have been called.This is useful to order script execution.
+        /// For example a follow camera should always be implemented in LateTick because it tracks objects that might have moved inside Tick.
         /// </summary>
-        bool CanEverLateTick { get; }
+        /// <param name="deltaTime">The time in seconds it took to complete the last frame.</param>
+        void LateTick(float deltaTime);
 
         /// <summary>
-        /// If true, this component will get FixedTick after all objects have been initialized.
+        /// This function is called every fixed framerate frame.
+        /// FixedTick should be used instead of Update when dealing with Rigidbody.
+        /// For example when adding a force to a rigidbody, you have to apply the force every fixed frame inside FixedTick instead of every frame inside Tick.
         /// </summary>
-        bool CanEverFixedTick { get; }
-
-        /// <summary>
-        /// If true, this component will get Tick before BeginPlay.
-        /// </summary>
-        bool CanTickBeforePlay { get; }
-
-        /// <summary>
-        /// If true, this component will get LateTick before BeginPlay.
-        /// </summary>
-        bool CanLateTickBeforePlay { get; }
-
-        /// <summary>
-        /// If true, this component will get FixedTick beforeBeginPlay.
-        /// </summary>
-        bool CanFixedTickBeforePlay { get; }
+        /// <param name="fixedDeltaTime">The interval in seconds at which physics and other fixed frame rate updates (like MonoBehaviour's FixedUpdate) are performed.</param>
+        void FixedTick(float fixedDeltaTime);
         #endregion
     }
 }

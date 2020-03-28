@@ -7,15 +7,15 @@ namespace DreamMachineGameStudio.Dreamworks.HFSM
     public abstract class FCondition : ICondition
     {
         #region Fields
-        private readonly FRule rule;
+        private readonly FRuleDB _ruleDB;
         #endregion
 
         #region Constructors
-        public FCondition(FRule rule) => this.rule = rule;
+        public FCondition(FRuleDB ruleDB) => this._ruleDB = ruleDB;
         #endregion
 
         #region ICondition Implementation
-        bool ICondition.Check() => rule.Evaluate();
+        bool ICondition.Evaluate() => _ruleDB.Evaluate();
         #endregion
     }
 }

@@ -1,19 +1,23 @@
 ﻿/**Copyright 2016 - 2020, Dream Machine Game Studio. All Right Reserved.*/
 
-using DreamMachineGameStudio.Dreamworks.Core;
+using System.Collections.Generic;
 
 namespace DreamMachineGameStudio.Dreamworks.HFSM
 {
     public interface ITransition
     {
-        #region Field
+        #region Properties
         IState Target { get; }
 
-        FStringId Trigger { get; }
+        FTrigger Trigger { get; }
+
+        ICondition Condition { get; }
+
+        IReadOnlyList<ITransitionAction> Actions { get; }
         #endregion
 
         #region Methods
-        bool CheckCondition();
+        bool IsTriggered(FTrigger trigger);
 
         void PerformActions();
         #endregion

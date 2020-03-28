@@ -6,8 +6,10 @@ namespace DreamMachineGameStudio.Dreamworks.GamePlay.Health
 {
     public interface IHealable
     {
+        bool CanHeal { get; }
+
         #region Properties
-        Action<IHeal> OnHeal { get; }
+        Action<IHeal> OnHeal { get; set; }
         #endregion
 
         #region Methods

@@ -6,9 +6,9 @@ using DreamMachineGameStudio.Dreamworks.Debug;
 
 namespace DreamMachineGameStudio.Dreamworks.Variant
 {
-    [AName("Float")]
+    [NameAttribute("Float")]
     [Serializable]
-    public sealed class FFloat : FValue<float>
+    public sealed class FFloat : FVariant<float>
     {
         #region Constructors
         public FFloat(float value) : base(value) { }
@@ -17,50 +17,50 @@ namespace DreamMachineGameStudio.Dreamworks.Variant
         #endregion
 
         #region Public Methods
-        public override bool Equals(object obj)
+        public override bool Equals(object other)
         {
-            FFloat f = obj as FFloat;
-            FAssert.IsNotNull(f, $"Given object is not an {nameof(FFloat)}");
+            FFloat castedOther = other as FFloat;
+            FAssert.IsNotNull(castedOther, $"Other is not type of {nameof(FFloat)}");
 
-            if (obj == null || f == null)
+            if (other == null || castedOther == null)
             {
                 return false;
             }
-            else if ((object)this == obj)
+            else if ((object)this == other)
             {
                 return true;
             }
             else
             {
-                return value == f.value;
+                return _value == castedOther._value;
             }
         }
 
-        public override int GetHashCode() => value.GetHashCode();
+        public override int GetHashCode() => _value.GetHashCode();
         #endregion
 
         #region Protected Methods
-        protected override bool Equals(IValue other)
+        protected override bool Equals(IVariant other)
         {
             FFloat castedOther = other as FFloat;
-            FAssert.IsNotNull(castedOther, "Other is not FBool type.");
+            FAssert.IsNotNull(castedOther, $"Other is not type of {nameof(FFloat)}");
 
-            return this.value == castedOther.value;
+            return this._value == castedOther._value;
         }
 
-        protected override int CompareTo(IValue other)
+        protected override int CompareTo(IVariant other)
         {
             FFloat castedOther = other as FFloat;
-            FAssert.IsNotNull(castedOther, "Other is not FBool type.");
+            FAssert.IsNotNull(castedOther, $"Other is not type of {nameof(FFloat)}");
 
-            return value.CompareTo(castedOther.value);
+            return _value.CompareTo(castedOther._value);
         }
         #endregion
 
         #region Operator Overloading
         public static implicit operator FFloat(float f) => new FFloat(f);
 
-        public static implicit operator float(FFloat f) => f.value;
+        public static implicit operator float(FFloat f) => f._value;
 
         public static bool operator ==(FFloat lhs, FFloat rhs) => Equals(rhs, lhs);
 
@@ -78,7 +78,7 @@ namespace DreamMachineGameStudio.Dreamworks.Variant
             }
             else
             {
-                return rhs.value == lhs.value;
+                return rhs._value == lhs._value;
             }
         }
         #endregion

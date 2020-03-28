@@ -1,79 +1,84 @@
 ﻿/**Copyright 2016 - 2020, Dream Machine Game Studio. All Right Reserved.*/
 
 using System.Collections.Generic;
-using DreamMachineGameStudio.Dreamworks.Core;
 
 namespace DreamMachineGameStudio.Dreamworks.HFSM
 {
     public sealed class FTransition : ITransition
     {
         #region Fields
-        private readonly FStringId trigger;
+        public static readonly FTransition Empty = new FTransition(FTrigger.Empty);
 
-        private readonly IState target;
+        private readonly FTrigger _trigger;
 
-        private readonly ICondition condition;
+        private readonly IState _target;
 
-        private readonly List<ITransitionAction> actions = new List<ITransitionAction>();
+        private readonly ICondition _condition;
+
+        private readonly List<ITransitionAction> _actions = new List<ITransitionAction>();
         #endregion
 
-        #region Constructor
-        public FTransition(FStringId trigger, IState target)
+        #region Constructors
+        private FTransition(FTrigger trigger)
         {
-            this.target = target;
-            this.trigger = trigger;
+            this._trigger = trigger;
         }
 
-        public FTransition(FStringId trigger, IState target, ICondition condition)
+        public FTransition(IState target) : this(FTrigger.Empty)
         {
-            this.target = target;
-            this.trigger = trigger;
-            this.condition = condition;
+            this._target = target;
         }
 
-        public FTransition(FStringId trigger, IState target, ITransitionAction action)
+        public FTransition(FTrigger trigger, IState target) : this(trigger)
         {
-            this.target = target;
-            this.trigger = trigger;
-            this.actions.Add(action);
+            this._target = target;
         }
 
-        public FTransition(FStringId trigger, IState target, IEnumerable<ITransitionAction> actions)
+        public FTransition(FTrigger trigger, IState target, ITransitionAction action) : this(trigger, target)
         {
-            this.target = target;
-            this.trigger = trigger;
-            this.actions.AddRange(actions);
+            _actions.Add(action);
         }
 
-        public FTransition(FStringId trigger, IState target, ICondition condition, ITransitionAction action)
+        public FTransition(FTrigger trigger, IState target, IEnumerable<ITransitionAction> actions) : this(trigger, target)
         {
-            this.target = target;
-            this.trigger = trigger;
-            this.condition = condition;
-            this.actions.Add(action);
+            this._actions.AddRange(actions);
         }
 
-        public FTransition(FStringId trigger, IState target, ICondition condition, IEnumerable<ITransitionAction> actions)
+        public FTransition(FTrigger trigger, IState target, ICondition condition) : this(trigger, target)
         {
-            this.target = target;
-            this.trigger = trigger;
-            this.condition = condition;
-            this.actions.AddRange(actions);
+            this._condition = condition;
+        }
+
+        public FTransition(FTrigger trigger, IState target, ICondition condition, ITransitionAction action) : this(trigger, target, condition)
+        {
+            _actions.Add(action);
+        }
+
+        public FTransition(FTrigger trigger, IState target, ICondition condition, IEnumerable<ITransitionAction> actions) : this(trigger, target, condition)
+        {
+            this._actions.AddRange(actions);
         }
         #endregion
 
-        #region ITransaction Implementation
-        IState ITransition.Target => target;
+        #region ITransition Implementation
+        IState ITransition.Target => _target;
 
-        FStringId ITransition.Trigger => trigger;
+        FTrigger ITransition.Trigger => _trigger;
 
-        bool ITransition.CheckCondition() => condition == null ? true : condition.Check();
+        ICondition ITransition.Condition => _condition;
+
+        IReadOnlyList<ITransitionAction> ITransition.Actions => _actions;
+
+        bool ITransition.IsTriggered(FTrigger trigger)
+        {
+            return this._trigger == trigger && (_condition == null || _condition.Evaluate());
+        }
 
         void ITransition.PerformActions()
         {
-            for (int i = 0; i < actions.Count; i++)
+            for (int i = 0; i < _actions.Count; ++i)
             {
-                actions[i].Perform();
+                _actions[i].Perform();
             }
         }
         #endregion

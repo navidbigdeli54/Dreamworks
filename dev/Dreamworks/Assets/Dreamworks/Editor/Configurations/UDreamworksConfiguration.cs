@@ -12,8 +12,8 @@ namespace DreamMachineGameStudio.Dreamworks.Editor
     public class UDreamworksConfiguration : UEditor
     {
         #region Field
-        private SerializedProperty startupClassProperty;
-        private SerializedProperty dontLoadFrameworkProperty;
+        private SerializedProperty _startupClassProperty;
+        private SerializedProperty _dontLoadFrameworkProperty;
 
         private bool foldout = true;
         #endregion
@@ -29,9 +29,9 @@ namespace DreamMachineGameStudio.Dreamworks.Editor
         #region Method
         private void OnEnable()
         {
-            dontLoadFrameworkProperty = serializedObject.FindProperty("dontLoadFramework");
+            _dontLoadFrameworkProperty = serializedObject.FindProperty("_dontLoadFramework");
 
-            startupClassProperty = serializedObject.FindProperty("startupClass");
+            _startupClassProperty = serializedObject.FindProperty("_startupClass");
         }
 
         public override void OnInspectorGUI()
@@ -42,9 +42,9 @@ namespace DreamMachineGameStudio.Dreamworks.Editor
             {
                 EditorGUILayout.BeginVertical(GUI.skin.box);
 
-                EditorGUILayout.PropertyField(dontLoadFrameworkProperty);
+                EditorGUILayout.PropertyField(_dontLoadFrameworkProperty);
 
-                EditorGUILayout.PropertyField(startupClassProperty);
+                EditorGUILayout.PropertyField(_startupClassProperty);
 
                 serializedObject.ApplyModifiedProperties();
 

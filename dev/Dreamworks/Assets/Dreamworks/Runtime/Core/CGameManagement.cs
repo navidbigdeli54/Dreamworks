@@ -11,7 +11,7 @@ namespace DreamMachineGameStudio.Dreamworks.Core
     public sealed class CGameManagement : CComponent, IGameManagement
     {
         #region Fields
-        private IGameMode currentGameMode;
+        private IGameMode _currentGameMode;
         #endregion
 
         #region Property
@@ -27,47 +27,47 @@ namespace DreamMachineGameStudio.Dreamworks.Core
 
             MakePersistent();
 
-            FEventManager.Subscribe(FDefaultEventNameHelper.ON_SCENE_LOADED, OnSceneLoaded);
-            FEventManager.Subscribe(FDefaultEventNameHelper.ON_SCENE_UNLOADED, OnSceneUnloaded);
+            FEventManager.Subscribe(FEventManager.ON_SCENE_LOADED, OnSceneLoaded);
+            FEventManager.Subscribe(FEventManager.ON_SCENE_UNLOADED, OnSceneUnloaded);
         }
 
         protected override void TickComponent(float deltaTime)
         {
             base.TickComponent(deltaTime);
 
-            if (currentGameMode == null) return;
+            if (_currentGameMode == null) return;
 
-            if (currentGameMode.HasInitialized == false) return;
+            if (_currentGameMode.HasInitialized == false) return;
 
-            if (currentGameMode.HasInitialized && currentGameMode.HasBeganPlay == false && currentGameMode.CanTickBeforePlay == false) return;
+            if (_currentGameMode.HasInitialized && _currentGameMode.HasBeganPlay == false && _currentGameMode.CanTickBeforePlay == false) return;
 
-            currentGameMode.Tick(deltaTime);
+            _currentGameMode.Tick(deltaTime);
         }
 
         protected override void LateTickComponent(float deltaTime)
         {
             base.LateTickComponent(deltaTime);
 
-            if (currentGameMode == null) return;
+            if (_currentGameMode == null) return;
 
-            if (currentGameMode.HasInitialized == false) return;
+            if (_currentGameMode.HasInitialized == false) return;
 
-            if (currentGameMode.HasInitialized && currentGameMode.HasBeganPlay == false && currentGameMode.CanLateTickBeforePlay == false) return;
+            if (_currentGameMode.HasInitialized && _currentGameMode.HasBeganPlay == false && _currentGameMode.CanLateTickBeforePlay == false) return;
 
-            currentGameMode.LateTick(deltaTime);
+            _currentGameMode.LateTick(deltaTime);
         }
 
-        protected override void FixedTickComponent(float deltaTime)
+        protected override void FixedTickComponent(float fixedDeltaTime)
         {
-            base.FixedTickComponent(deltaTime);
+            base.FixedTickComponent(fixedDeltaTime);
 
-            if (currentGameMode == null) return;
+            if (_currentGameMode == null) return;
 
-            if (currentGameMode.HasInitialized == false) return;
+            if (_currentGameMode.HasInitialized == false) return;
 
-            if (currentGameMode.HasInitialized && currentGameMode.HasBeganPlay == false && currentGameMode.CanFixedTickBeforePlay == false) return;
+            if (_currentGameMode.HasInitialized && _currentGameMode.HasBeganPlay == false && _currentGameMode.CanFixedTickBeforePlay == false) return;
 
-            currentGameMode.FixedTick(deltaTime);
+            _currentGameMode.FixedTick(fixedDeltaTime);
         }
         #endregion
 
@@ -88,26 +88,26 @@ namespace DreamMachineGameStudio.Dreamworks.Core
             }
             else
             {
-                currentGameMode = Activator.CreateInstance(metadata.GameMode.Type) as IGameMode;
+                _currentGameMode = Activator.CreateInstance(metadata.GameMode.Type) as IGameMode;
 
-                await currentGameMode?.PreInitializeAsync();
-                await currentGameMode?.InitializeAsync();
-                await currentGameMode?.BeginPlayAsync();
+                await _currentGameMode?.PreInitializeAsync();
+                await _currentGameMode?.InitializeAsync();
+                await _currentGameMode?.BeginPlayAsync();
 
-                FEventManager.Publish(FDefaultEventNameHelper.ON_GAME_MODE_LOADED);
+                FEventManager.Publish(FEventManager.ON_GAME_MODE_LOADED);
             }
         }
 
         private async void OnSceneUnloaded(EventArgs arg)
         {
-            await currentGameMode.UninitializeAsync();
+            await _currentGameMode.UninitializeAsync();
 
-            currentGameMode = null;
+            _currentGameMode = null;
         }
         #endregion
 
         #region IGameManagement Implementation
-        IGameMode IGameManagement.CurrentGameMode => currentGameMode;
+        IGameMode IGameManagement.CurrentGameMode => _currentGameMode;
         #endregion
     }
 }

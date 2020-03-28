@@ -6,10 +6,10 @@ using DreamMachineGameStudio.Dreamworks.Debug;
 
 namespace DreamMachineGameStudio.Dreamworks.Core
 {
-    public sealed class FStringId : IEquatable<FStringId>, IEqualityComparer<FStringId>
+    public class FStringId : IEquatable<FStringId>, IEqualityComparer<FStringId>
     {
         #region Fields
-        private readonly int id;
+        private readonly int _id;
         #endregion
 
         #region Properties
@@ -25,7 +25,7 @@ namespace DreamMachineGameStudio.Dreamworks.Core
             Value = str;
 #endif
 
-            id = str.GetHashCode();
+            _id = UnityEngine.Animator.StringToHash(str);
         }
 
         public static implicit operator FStringId(string str) => new FStringId(str);
@@ -40,14 +40,14 @@ namespace DreamMachineGameStudio.Dreamworks.Core
 
             if ((object)this == obj) return true;
 
-            return id == ((FStringId)obj).id;
+            return _id == ((FStringId)obj)._id;
         }
 
 #if UNITY_EDITOR
         public override string ToString() => Value;
 #endif
 
-        public override int GetHashCode() => id;
+        public override int GetHashCode() => _id;
         #endregion
 
         #region Static Methods
@@ -57,7 +57,7 @@ namespace DreamMachineGameStudio.Dreamworks.Core
 
             if (lhs is null || rhs is null) return false;
 
-            return lhs.id == rhs.id;
+            return lhs._id == rhs._id;
         }
         #endregion
 
@@ -68,7 +68,7 @@ namespace DreamMachineGameStudio.Dreamworks.Core
         #endregion
 
         #region IEquatable<FStringId> Implementation
-        bool IEquatable<FStringId>.Equals(FStringId other) => id == other.id;
+        bool IEquatable<FStringId>.Equals(FStringId other) => _id == other._id;
         #endregion
 
         #region IEqualityComparer<FStringId> Implementation

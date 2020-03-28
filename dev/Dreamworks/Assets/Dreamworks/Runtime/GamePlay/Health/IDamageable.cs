@@ -7,9 +7,9 @@ namespace DreamMachineGameStudio.Dreamworks.GamePlay.Health
     public interface IDamageable
     {
         #region Properties
-        Action OnDeath { get; }
+        Action OnDeath { get; set; }
 
-        Action<IDamage> OnTakeDamage { get; }
+        Action<IDamage> OnTakeDamage { get; set; }
         #endregion
 
         #region Methods

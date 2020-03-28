@@ -2,6 +2,7 @@
 
 using System;
 using UnityEngine;
+using UnityEngine.Serialization;
 using DreamMachineGameStudio.Dreamworks.Core;
 
 namespace DreamMachineGameStudio.Dreamworks.GamePlay.Health
@@ -14,36 +15,39 @@ namespace DreamMachineGameStudio.Dreamworks.GamePlay.Health
         protected const int MAX_HEALTH = 100;
 
         [SerializeField]
-        protected int health = MAX_HEALTH;
+        [FormerlySerializedAs("health")]
+        protected int _health = MAX_HEALTH;
         #endregion
 
         #region Properties
-        public int Health => health;
+        public int Health => _health;
         #endregion
 
         #region IHealable
-        public Action<IHeal> OnHeal { get; }
+        public bool CanHeal => _health < MAX_HEALTH;
+
+        public Action<IHeal> OnHeal { get; set; }
 
         public void Heal(IHeal heal)
         {
-            health = Mathf.Clamp(health += heal.Amount, MIN_HEALTH, MAX_HEALTH);
+            _health = Mathf.Clamp(_health += heal.Amount, MIN_HEALTH, MAX_HEALTH);
 
             OnHeal?.Invoke(heal);
         }
         #endregion
 
         #region IDamageable
-        public Action OnDeath { get; }
+        public Action OnDeath { get; set; }
 
-        public Action<IDamage> OnTakeDamage { get; }
+        public Action<IDamage> OnTakeDamage { get; set; }
 
         public void TakeDamage(IDamage damage)
         {
-            health = Mathf.Clamp(health - damage.Amount, MIN_HEALTH, MAX_HEALTH);
+            _health = Mathf.Clamp(_health - damage.Amount, MIN_HEALTH, MAX_HEALTH);
 
             OnTakeDamage?.Invoke(damage);
 
-            if (health == MIN_HEALTH)
+            if (_health == MIN_HEALTH)
             {
                 OnDeath?.Invoke();
             }

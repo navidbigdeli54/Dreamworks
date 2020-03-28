@@ -10,13 +10,13 @@ namespace DreamMachineGameStudio.Dreamworks.Rule
     public sealed class FRule
     {
         #region Fields
-        private readonly List<ICriteria> criterias = new List<ICriteria>();
+        private readonly List<ICriteria> _criterias = new List<ICriteria>();
         #endregion
 
         #region Properties
         public IResponse Response { get; private set; }
 
-        public IReadOnlyList<ICriteria> Criterias => criterias;
+        public IReadOnlyList<ICriteria> Criterias => _criterias;
         #endregion
 
         #region Methods
@@ -27,25 +27,25 @@ namespace DreamMachineGameStudio.Dreamworks.Rule
             return this;
         }
 
-        public FRule AddCriteria(FBlackboard blackboard, FStringId key, IValue expectedValue)
+        public FRule AddCriteria(FBlackboard blackboard, FStringId key, IVariant expectedValue)
         {
-            criterias.Add(new FCriteria(blackboard, key, EValueComparer.Equal, expectedValue));
+            _criterias.Add(new FCriteria(blackboard, key, EValueComparer.Equal, expectedValue));
 
             return this;
         }
 
-        public FRule AddCriteria(FBlackboard blackboard, FStringId key, EValueComparer comparer, IValue expectedValue)
+        public FRule AddCriteria(FBlackboard blackboard, FStringId key, EValueComparer comparer, IVariant expectedValue)
         {
-            criterias.Add(new FCriteria(blackboard, key, comparer, expectedValue));
+            _criterias.Add(new FCriteria(blackboard, key, comparer, expectedValue));
 
             return this;
         }
 
         public bool Evaluate()
         {
-            for (int i = 0; i < criterias.Count; i++)
+            for (int i = 0; i < _criterias.Count; i++)
             {
-                if (criterias[i].Evaluate() == false)
+                if (_criterias[i].Evaluate() == false)
                     return false;
             }
 

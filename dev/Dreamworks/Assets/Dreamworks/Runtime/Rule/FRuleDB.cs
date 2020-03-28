@@ -8,17 +8,17 @@ namespace DreamMachineGameStudio.Dreamworks.Rule
     public sealed class FRuleDB
     {
         #region Fields
-        private readonly List<FRule> rules = new List<FRule>();
+        private readonly List<FRule> _rules = new List<FRule>();
         #endregion
 
         #region Methods
-        public void AddRule(FRule rule) => rules.Add(rule);
+        public void AddRule(FRule rule) => _rules.Add(rule);
 
         public bool Evaluate()
         {
-            for (int i = 0; i < rules.Count; i++)
+            for (int i = 0; i < _rules.Count; i++)
             {
-                if (rules[i].Evaluate())
+                if (_rules[i].Evaluate())
                 {
                     return true;
                 }
@@ -29,13 +29,13 @@ namespace DreamMachineGameStudio.Dreamworks.Rule
 
         public IResponse GetResponse()
         {
-            List<FRule> acceptedRules = new List<FRule>(rules.Count);
+            List<FRule> acceptedRules = new List<FRule>(_rules.Count);
 
             int maxCriteriaNumber = 0;
 
-            for (int i = 0; i < rules.Count; i++)
+            for (int i = 0; i < _rules.Count; i++)
             {
-                FRule rule = rules[i];
+                FRule rule = _rules[i];
 
                 if (rule.Evaluate())
                 {

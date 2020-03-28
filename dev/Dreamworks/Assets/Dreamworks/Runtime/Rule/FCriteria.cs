@@ -10,55 +10,55 @@ namespace DreamMachineGameStudio.Dreamworks.Rule
     public sealed class FCriteria : ICriteria
     {
         #region Fields
-        private readonly FStringId key;
+        private readonly FStringId _key;
 
-        private readonly IValue expectedValue;
+        private readonly IVariant _expectedValue;
 
-        private readonly EValueComparer comparer;
+        private readonly EValueComparer _comparer;
 
-        private readonly FBlackboard blackboard;
+        private readonly FBlackboard _blackboard;
         #endregion
 
         #region Constructors
-        public FCriteria(FBlackboard blackboard, FStringId key, EValueComparer comparer, IValue expectedValue)
+        public FCriteria(FBlackboard blackboard, FStringId key, EValueComparer comparer, IVariant expectedValue)
         {
-            this.key = key;
-            this.comparer = comparer;
-            this.blackboard = blackboard;
-            this.expectedValue = expectedValue;
+            this._key = key;
+            this._comparer = comparer;
+            this._blackboard = blackboard;
+            this._expectedValue = expectedValue;
         }
         #endregion
 
         #region Private Methods
-        private bool CheckEquality(IValue currentValue)
+        private bool CheckEquality(IVariant currentValue)
         {
-            FAssert.AreEqual(expectedValue.GetType(), currentValue.GetType(), $"Expected value is {expectedValue.GetType().Name} but current value is {currentValue.GetType()}");
+            FAssert.AreEqual(_expectedValue.GetType(), currentValue.GetType(), $"Expected value is {_expectedValue.GetType().Name} but current value is {currentValue.GetType()}");
 
-            if (currentValue == expectedValue) return true;
+            if (currentValue == _expectedValue) return true;
 
-            return currentValue.Equals(expectedValue);
+            return currentValue.Equals(_expectedValue);
         }
 
-        private int CompareValue(IValue currentValue)
+        private int CompareValue(IVariant currentValue)
         {
-            FAssert.AreEqual(expectedValue.GetType(), currentValue.GetType(), $"Expected value is {expectedValue.GetType().Name} but current value is {currentValue.GetType()}");
+            FAssert.AreEqual(_expectedValue.GetType(), currentValue.GetType(), $"Expected value is {_expectedValue.GetType().Name} but current value is {currentValue.GetType()}");
 
-            return currentValue.CompareTo(expectedValue);
+            return currentValue.CompareTo(_expectedValue);
         }
         #endregion
 
         #region ICriteria Implementation
-        FStringId ICriteria.Key => key;
+        FStringId ICriteria.Key => _key;
 
-        EValueComparer ICriteria.Comparer => comparer;
+        EValueComparer ICriteria.Comparer => _comparer;
 
-        FBlackboard ICriteria.Blackboard => blackboard;
+        FBlackboard ICriteria.Blackboard => _blackboard;
 
         bool ICriteria.Evaluate()
         {
-            if (blackboard.TryGetValue(key, out IValue currentValue))
+            if (_blackboard.TryGetValue(_key, out IVariant currentValue))
             {
-                switch (comparer)
+                switch (_comparer)
                 {
                     case EValueComparer.Equal:
                         return CheckEquality(currentValue);

@@ -12,9 +12,9 @@ namespace DreamMachineGameStudio.Dreamworks.Editor
     public class UScriptableObject : EditorWindow
     {
         #region Field
-        private int selectedIndex;
-        private string[] scriptableObjectNames;
-        private Type[] scriptableObjectTypes;
+        private int _selectedIndex;
+        private string[] _scriptableObjectNames;
+        private Type[] _scriptableObjectTypes;
 
         private const string POPUP_LABLE_NAME = "Scriptable Objects";
         private const string CREATE_BUTTON_NAME = "Create";
@@ -33,25 +33,25 @@ namespace DreamMachineGameStudio.Dreamworks.Editor
         #region EditorWindow Methods
         private void OnEnable()
         {
-            scriptableObjectTypes = FReflectionUtility.GetSubTypesOf<SScriptableObject>().Where(x => FReflectionUtility.HasDefinedAttribute(x, AScriptableObjectWizard.CLASS_TYPE)).ToArray();
+            _scriptableObjectTypes = FReflectionUtility.GetSubTypesOf<SScriptableObject>().Where(x => FReflectionUtility.HasDefinedAttribute(x, ScriptableObjectWizardAttribute.CLASS_TYPE)).ToArray();
 
-            scriptableObjectNames = scriptableObjectTypes.Select(x => FReflectionUtility.GetAttributeProperty<string>(x, AScriptableObjectWizard.CLASS_TYPE, nameof(AScriptableObjectWizard.Name))).ToArray();
+            _scriptableObjectNames = _scriptableObjectTypes.Select(x => FReflectionUtility.GetAttributeProperty<string>(x, ScriptableObjectWizardAttribute.CLASS_TYPE, nameof(ScriptableObjectWizardAttribute.Name))).ToArray();
         }
 
         private void OnGUI()
         {
             EditorGUILayout.BeginVertical();
 
-            selectedIndex = EditorGUILayout.Popup(POPUP_LABLE_NAME, selectedIndex, scriptableObjectNames);
+            _selectedIndex = EditorGUILayout.Popup(POPUP_LABLE_NAME, _selectedIndex, _scriptableObjectNames);
 
             if (GUILayout.Button(CREATE_BUTTON_NAME))
             {
 
                 string path = AssetDatabase.GetAssetPath(Selection.activeObject);
 
-                ScriptableObject asset = CreateInstance(scriptableObjectTypes.ElementAt(selectedIndex));
+                ScriptableObject asset = CreateInstance(_scriptableObjectTypes.ElementAt(_selectedIndex));
 
-                ProjectWindowUtil.CreateAsset(asset, $"{path}/{scriptableObjectTypes.ElementAt(selectedIndex).Name}.asset");
+                ProjectWindowUtil.CreateAsset(asset, $"{path}/{_scriptableObjectTypes.ElementAt(_selectedIndex).Name}.asset");
 
                 Close();
             }
