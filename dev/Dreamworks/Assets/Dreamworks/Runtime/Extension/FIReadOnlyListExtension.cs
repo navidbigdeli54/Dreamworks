@@ -2,7 +2,7 @@
 
 namespace DreamMachineGameStudio.Dreamworks.Extension
 {
-    public static class IReadOnlyListExtension
+    public static class FIReadOnlyListExtension
     {
         public static int IndexOf<T>(this IReadOnlyList<T> list, T item) where T : class
         {
