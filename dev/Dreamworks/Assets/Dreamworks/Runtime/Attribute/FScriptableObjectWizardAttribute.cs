@@ -7,14 +7,14 @@ namespace DreamMachineGameStudio.Dreamworks
 {
     [Conditional("UNITY_EDITOR")]
     [AttributeUsage(AttributeTargets.Class)]
-    public class ScriptableObjectWizardAttribute : NameAttribute
+    public class FScriptableObjectWizardAttribute : FNameAttribute
     {
         #region Fields
-        public new static readonly Type CLASS_TYPE = typeof(ScriptableObjectWizardAttribute);
+        public new static readonly Type CLASS_TYPE = typeof(FScriptableObjectWizardAttribute);
         #endregion
 
         #region Constructors
-        public ScriptableObjectWizardAttribute(string name) : base(name) { }
+        public FScriptableObjectWizardAttribute(string name) : base(name) { }
         #endregion
     }
 }

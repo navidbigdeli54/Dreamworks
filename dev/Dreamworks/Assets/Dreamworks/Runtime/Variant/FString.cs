@@ -7,7 +7,7 @@ using DreamMachineGameStudio.Dreamworks.Debug;
 namespace DreamMachineGameStudio.Dreamworks.Variant
 {
     [Serializable]
-    [NameAttribute("String")]
+    [FNameAttribute("String")]
     public sealed class FString : FVariant<string>
     {
         #region Constructors

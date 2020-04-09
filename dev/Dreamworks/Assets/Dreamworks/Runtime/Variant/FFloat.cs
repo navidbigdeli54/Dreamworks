@@ -6,7 +6,7 @@ using DreamMachineGameStudio.Dreamworks.Debug;
 
 namespace DreamMachineGameStudio.Dreamworks.Variant
 {
-    [NameAttribute("Float")]
+    [FNameAttribute("Float")]
     [Serializable]
     public sealed class FFloat : FVariant<float>
     {

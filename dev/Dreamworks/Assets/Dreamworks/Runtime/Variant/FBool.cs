@@ -6,7 +6,7 @@ using DreamMachineGameStudio.Dreamworks.Debug;
 
 namespace DreamMachineGameStudio.Dreamworks.Variant
 {
-    [Name("Bool")]
+    [FName("Bool")]
     [Serializable]
     public sealed class FBool : FVariant<bool>
     {

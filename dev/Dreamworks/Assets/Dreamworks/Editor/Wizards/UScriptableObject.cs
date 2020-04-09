@@ -33,9 +33,9 @@ namespace DreamMachineGameStudio.Dreamworks.Editor
         #region EditorWindow Methods
         private void OnEnable()
         {
-            _scriptableObjectTypes = FReflectionUtility.GetSubTypesOf<SScriptableObject>().Where(x => FReflectionUtility.HasDefinedAttribute(x, ScriptableObjectWizardAttribute.CLASS_TYPE)).ToArray();
+            _scriptableObjectTypes = FReflectionUtility.GetSubTypesOf<SScriptableObject>().Where(x => FReflectionUtility.HasDefinedAttribute(x, FScriptableObjectWizardAttribute.CLASS_TYPE)).ToArray();
 
-            _scriptableObjectNames = _scriptableObjectTypes.Select(x => FReflectionUtility.GetAttributeProperty<string>(x, ScriptableObjectWizardAttribute.CLASS_TYPE, nameof(ScriptableObjectWizardAttribute.Name))).ToArray();
+            _scriptableObjectNames = _scriptableObjectTypes.Select(x => FReflectionUtility.GetAttributeProperty<string>(x, FScriptableObjectWizardAttribute.CLASS_TYPE, nameof(FScriptableObjectWizardAttribute.Name))).ToArray();
         }
 
         private void OnGUI()

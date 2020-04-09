@@ -52,14 +52,14 @@ namespace DreamMachineGameStudio.Dreamworks.Editor
         #region Private Methods
         private void CacheTypeNames()
         {
-            if (fieldInfo.IsDefined(SubclassFilterAttribute.CLASS_TYPE))
+            if (fieldInfo.IsDefined(FSubclassFilterAttribute.CLASS_TYPE))
             {
-                Attribute attribute = fieldInfo.GetCustomAttribute(SubclassFilterAttribute.CLASS_TYPE);
-                PropertyInfo typePropertyInfo = attribute.GetType().GetProperty(nameof(SubclassFilterAttribute.Type));
+                Attribute attribute = fieldInfo.GetCustomAttribute(FSubclassFilterAttribute.CLASS_TYPE);
+                PropertyInfo typePropertyInfo = attribute.GetType().GetProperty(nameof(FSubclassFilterAttribute.Type));
                 Type typeFilter = (Type)typePropertyInfo.GetValue(attribute);
                 IEnumerable<Type> subtypes = FReflectionUtility.GetSubTypesOf(typeFilter);
                 _typeFullNames = subtypes.Select(x => x.FullName).ToArray();
-                _displaynames = subtypes.Select(x => FReflectionUtility.HasDefinedAttribute(x, NameAttribute.CLASS_TYPE) ? FReflectionUtility.GetAttributeProperty<string>(x, NameAttribute.CLASS_TYPE, nameof(NameAttribute.Name)) : x.FullName).ToArray();
+                _displaynames = subtypes.Select(x => FReflectionUtility.HasDefinedAttribute(x, FNameAttribute.CLASS_TYPE) ? FReflectionUtility.GetAttributeProperty<string>(x, FNameAttribute.CLASS_TYPE, nameof(FNameAttribute.Name)) : x.FullName).ToArray();
             }
         }
 

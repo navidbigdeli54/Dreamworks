@@ -9,7 +9,7 @@ using UnityEngine.Serialization;
 
 namespace DreamMachineGameStudio.Dreamworks.Core
 {
-    [ScriptableObjectWizardAttribute("Dreamworks Configuration")]
+    [FScriptableObjectWizardAttribute("Dreamworks Configuration")]
     public class SDreamworksConfiguration : SScriptableObject
     {
         #region Field
@@ -18,7 +18,7 @@ namespace DreamMachineGameStudio.Dreamworks.Core
         private bool _dontLoadFramework = false;
 
         [SerializeField]
-        [SubclassFilter(typeof(FStartup))]
+        [FSubclassFilter(typeof(FStartup))]
         [FormerlySerializedAs("startupClass")]
         private FSubclass _startupClass;
         #endregion

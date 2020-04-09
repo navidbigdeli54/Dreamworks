@@ -6,10 +6,10 @@ using System;
 
 namespace DreamMachineGameStudio.Dreamworks
 {
-    public class SubclassFilterAttribute : Attribute
+    public class FSubclassFilterAttribute : Attribute
     {
         #region Fields
-        public readonly static Type CLASS_TYPE = typeof(SubclassFilterAttribute);
+        public readonly static Type CLASS_TYPE = typeof(FSubclassFilterAttribute);
         #endregion
 
         #region Property
@@ -17,7 +17,7 @@ namespace DreamMachineGameStudio.Dreamworks
         #endregion
 
         #region Constructor
-        public SubclassFilterAttribute(Type type)
+        public FSubclassFilterAttribute(Type type)
         {
             Type = type;
         }

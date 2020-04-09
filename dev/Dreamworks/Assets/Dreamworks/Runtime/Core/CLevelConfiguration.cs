@@ -11,7 +11,7 @@ namespace DreamMachineGameStudio.Dreamworks.Core
     {
         #region Fields
         [SerializeField]
-        [SubclassFilter(typeof(FGameMode))]
+        [FSubclassFilter(typeof(FGameMode))]
         [FormerlySerializedAs("gameMode")]
         private FSubclass _gameMode;
         #endregion

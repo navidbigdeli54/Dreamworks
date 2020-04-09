@@ -7,10 +7,10 @@ namespace DreamMachineGameStudio.Dreamworks
 {
     [Conditional("UNITY_EDITOR")]
     [AttributeUsage(AttributeTargets.All)]
-    public class NameAttribute : Attribute
+    public class FNameAttribute : Attribute
     {
         #region Fields
-        public readonly static Type CLASS_TYPE = typeof(NameAttribute);
+        public readonly static Type CLASS_TYPE = typeof(FNameAttribute);
         #endregion
 
         #region Properties
@@ -18,7 +18,7 @@ namespace DreamMachineGameStudio.Dreamworks
         #endregion
 
         #region Constructors
-        public NameAttribute(string name)
+        public FNameAttribute(string name)
         {
             Name = name;
         }

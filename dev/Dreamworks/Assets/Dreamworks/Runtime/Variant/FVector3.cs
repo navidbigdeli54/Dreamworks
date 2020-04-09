@@ -8,7 +8,7 @@ using DreamMachineGameStudio.Dreamworks.Debug;
 namespace DreamMachineGameStudio.Dreamworks.Variant
 {
     [Serializable]
-    [NameAttribute("Vector3")]
+    [FNameAttribute("Vector3")]
     public sealed class FVector3 : FVariant<Vector3>
     {
         #region Constructors
