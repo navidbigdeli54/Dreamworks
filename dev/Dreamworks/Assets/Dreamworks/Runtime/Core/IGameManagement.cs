@@ -3,8 +3,6 @@
 
 namespace DreamMachineGameStudio.Dreamworks.Core
 {
-    /// <Author>Navid Bigdeli</Author>
-    /// <CreationDate>January/31/2018</CreationDate>
     public interface IGameManagement : IService
     {
         #region Property

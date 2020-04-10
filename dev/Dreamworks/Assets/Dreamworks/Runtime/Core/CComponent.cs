@@ -9,24 +9,14 @@ using DreamMachineGameStudio.Dreamworks.Persistent;
 
 namespace DreamMachineGameStudio.Dreamworks.Core
 {
-    /// <summary>
-    /// CComponent is base class for all component can attach to an game object. It has all callbacks that framework has provides.
-    /// </summary>
-    /// <Author>Navid Bigdeli</Author>
-    /// <CreationDate>April/24/2018</CreationDate>
     public abstract class CComponent : MonoBehaviour, IFObject
     {
         #region Field
-        /// <summary>
-        /// Use this instance instead of Transform for the sake of performance.
-        /// </summary>
-        protected Transform CachedTransform;
+        private bool _canEverTick = false;
 
-        private bool canEverTick = false;
+        private bool _canEverLateTick = false;
 
-        private bool canEverLateTick = false;
-
-        private bool canEverFixedTick = false;
+        private bool _canEverFixedTick = false;
         #endregion
 
         #region Property
@@ -53,17 +43,17 @@ namespace DreamMachineGameStudio.Dreamworks.Core
         /// <summary>
         /// If true, this component will get Tick after all objects have been initialized.
         /// </summary>
-        protected bool CanEverTick { get => canEverTick; set => SetCanEverTick(value); }
+        protected bool CanEverTick { get => _canEverTick; set => SetCanEverTick(value); }
 
         /// <summary>
         /// If true, this component will get LateTick after all objects have been initialized.
         /// </summary>
-        protected bool CanEverLateTick { get => canEverLateTick; set => SetCanEverLateTick(value); }
+        protected bool CanEverLateTick { get => _canEverLateTick; set => SetCanEverLateTick(value); }
 
         /// <summary>
         /// If true, this component will get FixedTick after all objects have been initialized.
         /// </summary>
-        protected bool CanEverFixedTick { get => canEverFixedTick; set => SetCanEverFixedTick(value); }
+        protected bool CanEverFixedTick { get => _canEverFixedTick; set => SetCanEverFixedTick(value); }
 
         /// <summary>
         /// If true, this component will get Tick before BeginPlay.
@@ -82,13 +72,9 @@ namespace DreamMachineGameStudio.Dreamworks.Core
         #endregion
 
         #region MonoBehaviour Methods
-        private async Task Awake()
+        private void Awake()
         {
-            CachedTransform = GetComponent<Transform>();
-
-            transform.position = new Vector3();
-
-            await MDreamwork.Instance.RegisterAsycn(this);
+            MDreamwork.Instance.Register(this);
 
             HasRegistered = true;
         }
@@ -151,8 +137,8 @@ namespace DreamMachineGameStudio.Dreamworks.Core
         /// FixedTick should be used instead of Update when dealing with Rigidbody.
         /// For example when adding a force to a rigidbody, you have to apply the force every fixed frame inside FixedTick instead of every frame inside Tick.
         /// </summary>
-        /// <param name="deltaTime">The interval in seconds at which physics and other fixed frame rate updates (like MonoBehaviour's FixedUpdate) are performed.</param>
-        protected virtual void FixedTickComponent(float deltaTime) { }
+        /// <param name="fixedDeltaTime">The interval in seconds at which physics and other fixed frame rate updates (like MonoBehaviour's FixedUpdate) are performed.</param>
+        protected virtual void FixedTickComponent(float fixedDeltaTime) { }
 
         /// <summary>
         /// OnEnableComponent will calls when Component become enable.
@@ -166,11 +152,11 @@ namespace DreamMachineGameStudio.Dreamworks.Core
 
         public void SetActive(bool value) => gameObject.SetActive(value);
 
-        public void SetParent(Transform parent) => CachedTransform.SetParent(parent);
+        public void SetParent(Transform parent) => transform.SetParent(parent);
 
-        public void SetParent(Component parent) => CachedTransform.SetParent(parent?.transform);
+        public void SetParent(Component parent) => transform.SetParent(parent?.transform);
 
-        public void SetParent(GameObject parent) => CachedTransform.SetParent(parent?.transform);
+        public void SetParent(GameObject parent) => transform.SetParent(parent?.transform);
 
         public Transform Parent => transform.parent;
 
@@ -186,25 +172,25 @@ namespace DreamMachineGameStudio.Dreamworks.Core
         #region Helpers
         private void SetCanEverTick(bool canEverTick)
         {
-            this.canEverTick = canEverTick;
+            _canEverTick = canEverTick;
 
-            if (this.canEverTick) MDreamwork.Instance.RegisterTick(this);
+            if (_canEverTick) MDreamwork.Instance.RegisterTick(this);
             else MDreamwork.Instance.UnregisterTick(this);
         }
 
         private void SetCanEverLateTick(bool canEverLateTick)
         {
-            this.canEverLateTick = canEverLateTick;
+            _canEverLateTick = canEverLateTick;
 
-            if (this.canEverLateTick) MDreamwork.Instance.RegisterLateTick(this);
+            if (_canEverLateTick) MDreamwork.Instance.RegisterLateTick(this);
             else MDreamwork.Instance.UnregisterLateTick(this);
         }
 
         private void SetCanEverFixedTick(bool canEverFixedTick)
         {
-            this.canEverFixedTick = canEverFixedTick;
+            _canEverFixedTick = canEverFixedTick;
 
-            if (this.canEverFixedTick) MDreamwork.Instance.RegisterFixedTick(this);
+            if (_canEverFixedTick) MDreamwork.Instance.RegisterFixedTick(this);
             else MDreamwork.Instance.UnregisterFixedTick(this);
         }
         #endregion
@@ -216,45 +202,45 @@ namespace DreamMachineGameStudio.Dreamworks.Core
         #endregion
 
         #region IFObject Implementation
-        bool IInitializable.HasRegistered => HasRegistered;
+        bool IInitializableObject.HasRegistered => HasRegistered;
 
-        bool IInitializable.HasInitialized => HasInitialized;
+        bool IInitializableObject.HasInitialized => HasInitialized;
 
-        bool IInitializable.HasBeganPlay => HasBeganPlay;
+        bool IInitializableObject.HasBeganPlay => HasBeganPlay;
 
-        bool ITickable.CanEverTick => CanEverTick;
+        bool ITickableObject.CanEverTick => CanEverTick;
 
-        bool ITickable.CanEverLateTick => CanEverLateTick;
+        bool ITickableObject.CanEverLateTick => CanEverLateTick;
 
-        bool ITickable.CanEverFixedTick => CanEverFixedTick;
+        bool ITickableObject.CanEverFixedTick => CanEverFixedTick;
 
-        bool ITickable.CanTickBeforePlay => CanTickBeforePlay;
+        bool ITickableObject.CanTickBeforePlay => CanTickBeforePlay;
 
-        bool ITickable.CanLateTickBeforePlay => CanLateTickBeforePlay;
+        bool ITickableObject.CanLateTickBeforePlay => CanLateTickBeforePlay;
 
-        bool ITickable.CanFixedTickBeforePlay => CanFixedTickBeforePlay;
+        bool ITickableObject.CanFixedTickBeforePlay => CanFixedTickBeforePlay;
 
-        string INameable.Name => name;
+        FName INameable.Name => name;
 
-        async Task IPureInitializable.PreInitializeAsync() => await PreInitializeComponenetAsync();
+        async Task IInitializable.PreInitializeAsync() => await PreInitializeComponenetAsync();
 
-        async Task IPureInitializable.InitializeAsync()
+        async Task IInitializable.InitializeAsync()
         {
             await InitializeComponentAsync();
 
             HasInitialized = true;
         }
 
-        async Task IPureInitializable.BeginPlayAsync()
+        async Task IInitializable.BeginPlayAsync()
         {
             await BeginPlayAsync();
 
             HasBeganPlay = true;
         }
 
-        async Task IPureInitializable.UninitializeAsync() => await UninitializeCompoonentAsync();
+        async Task IInitializable.UninitializeAsync() => await UninitializeCompoonentAsync();
 
-        void IPureTickable.Tick(float deltaTime)
+        void ITickable.Tick(float deltaTime)
         {
             if (gameObject.activeInHierarchy == false) return;
 
@@ -265,7 +251,7 @@ namespace DreamMachineGameStudio.Dreamworks.Core
             TickComponent(deltaTime);
         }
 
-        void IPureTickable.LateTick(float deltaTime)
+        void ITickable.LateTick(float deltaTime)
         {
             if (gameObject.activeInHierarchy == false) return;
 
@@ -276,7 +262,7 @@ namespace DreamMachineGameStudio.Dreamworks.Core
             LateTickComponent(deltaTime);
         }
 
-        void IPureTickable.FixedTick(float deltaTime)
+        void ITickable.FixedTick(float fixedDeltaTime)
         {
             if (gameObject.activeInHierarchy == false) return;
 
@@ -284,7 +270,7 @@ namespace DreamMachineGameStudio.Dreamworks.Core
 
             if (HasBeganPlay == false && CanFixedTickBeforePlay == false) return;
 
-            FixedTickComponent(deltaTime);
+            FixedTickComponent(fixedDeltaTime);
         }
         #endregion
     }

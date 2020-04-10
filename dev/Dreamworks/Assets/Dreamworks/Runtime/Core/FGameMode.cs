@@ -4,12 +4,10 @@ using System.Threading.Tasks;
 
 namespace DreamMachineGameStudio.Dreamworks.Core
 {
-    /// <Author>Navid Bigdeli</Author>
-    /// <CreationDate>April/24/2018</CreationDate>
     public abstract class FGameMode : IGameMode
     {
         #region Property
-        protected string Name { get; set; }
+        protected FName Name { get; set; }
 
         protected bool HasInitialized { get; private set; }
 
@@ -41,54 +39,54 @@ namespace DreamMachineGameStudio.Dreamworks.Core
 
         protected virtual void LateTick(float deltaTime) { }
 
-        protected virtual void FixedTick(float deltaTime) { }
+        protected virtual void FixedTick(float fixedDeltaTime) { }
 
         #endregion
 
         #region IGameMode Implementation
-        string INameable.Name { get => Name; }
+        FName INameable.Name { get => Name; }
 
-        bool IInitializable.HasRegistered => false;
+        bool IInitializableObject.HasRegistered => false;
 
-        bool IInitializable.HasInitialized => HasInitialized;
+        bool IInitializableObject.HasInitialized => HasInitialized;
 
-        bool IInitializable.HasBeganPlay => HasBeganPlay;
+        bool IInitializableObject.HasBeganPlay => HasBeganPlay;
 
-        bool ITickable.CanEverTick => CanEverTick;
+        bool ITickableObject.CanEverTick => CanEverTick;
 
-        bool ITickable.CanEverLateTick => CanEverLateTick;
+        bool ITickableObject.CanEverLateTick => CanEverLateTick;
 
-        bool ITickable.CanEverFixedTick => CanEverFixedTick;
+        bool ITickableObject.CanEverFixedTick => CanEverFixedTick;
 
-        bool ITickable.CanTickBeforePlay => CanTickBeforePlay;
+        bool ITickableObject.CanTickBeforePlay => CanTickBeforePlay;
 
-        bool ITickable.CanLateTickBeforePlay => CanLateTickBeforePlay;
+        bool ITickableObject.CanLateTickBeforePlay => CanLateTickBeforePlay;
 
-        bool ITickable.CanFixedTickBeforePlay => CanFixedTickBeforePlay;
+        bool ITickableObject.CanFixedTickBeforePlay => CanFixedTickBeforePlay;
 
-        async Task IPureInitializable.PreInitializeAsync() => await PreInitializeAsync();
+        async Task IInitializable.PreInitializeAsync() => await PreInitializeAsync();
 
-        async Task IPureInitializable.InitializeAsync()
+        async Task IInitializable.InitializeAsync()
         {
             await InitializeAsync();
 
             HasInitialized = true;
         }
 
-        async Task IPureInitializable.BeginPlayAsync()
+        async Task IInitializable.BeginPlayAsync()
         {
             await BeginPlayAsync();
 
             HasBeganPlay = true;
         }
 
-        async Task IPureInitializable.UninitializeAsync() => await UninitializeAsync();
+        async Task IInitializable.UninitializeAsync() => await UninitializeAsync();
 
-        void IPureTickable.Tick(float deltaTime) => Tick(deltaTime);
+        void ITickable.Tick(float deltaTime) => Tick(deltaTime);
 
-        void IPureTickable.LateTick(float deltaTime) => LateTick(deltaTime);
+        void ITickable.LateTick(float deltaTime) => LateTick(deltaTime);
 
-        void IPureTickable.FixedTick(float deltaTime) => FixedTick(deltaTime);
+        void ITickable.FixedTick(float fixedDeltaTime) => FixedTick(fixedDeltaTime);
         #endregion
     }
 }

@@ -2,10 +2,5 @@
 
 namespace DreamMachineGameStudio.Dreamworks.Core
 {
-    /// <summary>
-    /// IFObject has wrapping IInitializable and ITickable interfaces.
-    /// </summary>
-    /// <Author>Navid Bigdeli</Author>
-    /// <CreationDate>April/24/2018</CreationDate>
-    public interface IFObject : IInitializable, ITickable { }
+    public interface IFObject : IInitializableObject, ITickableObject { }
 }

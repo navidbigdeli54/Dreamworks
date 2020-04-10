@@ -4,20 +4,22 @@
 
 using System;
 using UnityEngine;
+using UnityEngine.Serialization;
 using DreamMachineGameStudio.Dreamworks.Utility;
 
 namespace DreamMachineGameStudio.Dreamworks.Core
 {
     [Serializable]
-    public class FSubclass
+    public sealed class FSubclass
     {
         #region Fields
         [SerializeField]
-        private string fullName;
+        [FormerlySerializedAs("fullName")]
+        private string _fullName;
         #endregion
 
         #region Property
-        public Type Type => FReflectionUtility.GetType(fullName);
+        public Type Type => FReflectionUtility.GetType(_fullName);
         #endregion
     }
 }

@@ -2,7 +2,5 @@
 
 namespace DreamMachineGameStudio.Dreamworks.Core
 {
-    /// <Author>Navid Bigdeli</Author>
-    /// <CreationDate>June/24/2018</CreationDate>
     public interface IGameMode : IFObject { }
 }

@@ -2,15 +2,10 @@
 
 namespace DreamMachineGameStudio.Dreamworks.Core
 {
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <Author>Navid Bigdeli</Author>
-    /// <CreationDate>April/24/2018</CreationDate>
     public interface IStartup
     {
         #region Method
-        void Configuration();
+        void Run();
         #endregion
     }
 }

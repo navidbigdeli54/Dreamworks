@@ -2,16 +2,10 @@
 
 using System;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using DreamMachineGameStudio.Dreamworks.Debug;
 
 namespace DreamMachineGameStudio.Dreamworks.Persistent
 {
-    /// <summary>
-    /// Make an game object persist between levels.
-    /// </summary>
-    /// <Author>Navid Bigdeli</Author>
-    /// <CreationDate>April/26/2019</CreationDate>
     [DisallowMultipleComponent]
     public class CPersistent : MonoBehaviour
     {
@@ -29,7 +23,7 @@ namespace DreamMachineGameStudio.Dreamworks.Persistent
         #region Method
         protected void OnDestroyComponent()
         {
-            SceneManager.MoveGameObjectToScene(gameObject, SceneManager.GetActiveScene());
+            UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(gameObject, UnityEngine.SceneManagement.SceneManager.GetActiveScene());
         }
         #endregion
 

@@ -12,14 +12,16 @@ using DreamMachineGameStudio.Dreamworks.EventManager;
 using USceneManager = UnityEngine.SceneManagement.SceneManager;
 
 
-namespace DreamMachineGameStudio.Dreamworks.SceneManagement
+namespace DreamMachineGameStudio.Dreamworks.SceneManager
 {
-    /// <Author>Navid Bigdeli</Author>
-    /// <CreationDate>June/24/2018</CreationDate>
-    public sealed class FSceneManager
+    public static class FSceneManager
     {
         #region Fields
         public readonly static Type CLASS_TYPE = typeof(FSceneManager);
+        #endregion
+
+        #region Properties
+        public static Scene ActiveScene => USceneManager.GetActiveScene();
         #endregion
 
         #region Constructor
@@ -32,7 +34,7 @@ namespace DreamMachineGameStudio.Dreamworks.SceneManagement
         #endregion
 
         #region Method
-        public async Task LoadSceneAsync(int sceneIndex, LoadSceneMode loadSceneMode)
+        public static async Task LoadSceneAsync(int sceneIndex, LoadSceneMode loadSceneMode)
         {
             TaskCompletionSource<bool> taskCompletionSource = new TaskCompletionSource<bool>();
 
@@ -42,10 +44,10 @@ namespace DreamMachineGameStudio.Dreamworks.SceneManagement
 
             await taskCompletionSource.Task;
 
-            FLog.Log(CLASS_TYPE.Name, $"Scene `{USceneManager.GetSceneByBuildIndex(sceneIndex).name}` has been loaded.");
+            FLog.Info(CLASS_TYPE.Name, $"Scene `{USceneManager.GetSceneByBuildIndex(sceneIndex).name}` has been loaded.");
         }
 
-        public async Task LoadSceneAsync(string sceneName, LoadSceneMode loadSceneMode)
+        public static async Task LoadSceneAsync(string sceneName, LoadSceneMode loadSceneMode)
         {
             TaskCompletionSource<bool> taskCompletionSource = new TaskCompletionSource<bool>();
 
@@ -55,10 +57,10 @@ namespace DreamMachineGameStudio.Dreamworks.SceneManagement
 
             await taskCompletionSource.Task;
 
-            FLog.Log(CLASS_TYPE.Name, $"Scene `{USceneManager.GetSceneByName(sceneName).name}` has been loaded.");
+            FLog.Info(CLASS_TYPE.Name, $"Scene `{USceneManager.GetSceneByName(sceneName).name}` has been loaded.");
         }
 
-        public async Task UnloadSceneAsycn(int sceneIndex)
+        public static async Task UnloadSceneAsycn(int sceneIndex)
         {
             TaskCompletionSource<bool> taskCompletionSource = new TaskCompletionSource<bool>();
 
@@ -68,10 +70,10 @@ namespace DreamMachineGameStudio.Dreamworks.SceneManagement
 
             await taskCompletionSource.Task;
 
-            FLog.Log(CLASS_TYPE.Name, $"Scene `{USceneManager.GetSceneByBuildIndex(sceneIndex).name}` has been unloaded.");
+            FLog.Info(CLASS_TYPE.Name, $"Scene `{USceneManager.GetSceneByBuildIndex(sceneIndex).name}` has been unloaded.");
         }
 
-        public async Task UnloadSceneAsycn(string sceneName)
+        public static async Task UnloadSceneAsycn(string sceneName)
         {
             TaskCompletionSource<bool> taskCompletionSource = new TaskCompletionSource<bool>();
 
@@ -81,10 +83,10 @@ namespace DreamMachineGameStudio.Dreamworks.SceneManagement
 
             await taskCompletionSource.Task;
 
-            FLog.Log(CLASS_TYPE.Name, $"Scene `{USceneManager.GetSceneByName(sceneName).name}` has been unloaded.");
+            FLog.Info(CLASS_TYPE.Name, $"Scene `{USceneManager.GetSceneByName(sceneName).name}` has been unloaded.");
         }
 
-        public async Task UnloadSceneAsycn(Scene scene)
+        public static async Task UnloadSceneAsycn(Scene scene)
         {
             TaskCompletionSource<bool> taskCompletionSource = new TaskCompletionSource<bool>();
 
@@ -94,24 +96,24 @@ namespace DreamMachineGameStudio.Dreamworks.SceneManagement
 
             await taskCompletionSource.Task;
 
-            FLog.Log(CLASS_TYPE.Name, $"Scene `{scene.name}` has been unloaded.");
+            FLog.Info(CLASS_TYPE.Name, $"Scene `{scene.name}` has been unloaded.");
         }
         #endregion
 
         #region Private Methods
         private static void ActiveSceneChanged(Scene replacedScene, Scene nextScene)
         {
-            FEventManager.Publish(FDefaultEventNameHelper.ON_ACTIVE_SCENE_CHANGED, new FActiveSceneChangedEventArg(replacedScene, nextScene));
+            FEventManager.Publish(FEventManager.ON_ACTIVE_SCENE_CHANGED, new FActiveSceneChangedEventArg(replacedScene, nextScene));
         }
 
         private static void SceneLoaded(Scene scene, LoadSceneMode loadSceneMode)
         {
-            FEventManager.Publish(FDefaultEventNameHelper.ON_SCENE_LOADED, new FSceneLoadedEventArg(scene, loadSceneMode));
+            FEventManager.Publish(FEventManager.ON_SCENE_LOADED, new FSceneLoadedEventArg(scene, loadSceneMode));
         }
 
         private static void SceneUnloaded(Scene scene)
         {
-            FEventManager.Publish(FDefaultEventNameHelper.ON_SCENE_UNLOADED, new FSceneUnloadedEventArg(scene));
+            FEventManager.Publish(FEventManager.ON_SCENE_UNLOADED, new FSceneUnloadedEventArg(scene));
         }
         #endregion
     }

@@ -7,8 +7,6 @@ using DreamMachineGameStudio.Dreamworks.Debug;
 
 namespace DreamMachineGameStudio.Dreamworks.EventManager
 {
-    /// <Author>Navid Bigdeli</Author>
-    /// <CreationDate>December/18/2019</CreationDate>
     public class CEventPublisher : CComponent
     {
         #region Methods

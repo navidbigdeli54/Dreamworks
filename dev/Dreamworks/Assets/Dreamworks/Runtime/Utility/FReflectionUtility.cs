@@ -8,17 +8,12 @@ using DreamMachineGameStudio.Dreamworks.Debug;
 
 namespace DreamMachineGameStudio.Dreamworks.Utility
 {
-    /// <summary>
-    /// Reflection Utility provide easy to use System.Reflection methods.
-    /// </summary>
-    /// <Author>Navid Bigdeli</Author>
-    /// <CreationDate>April/24/2018</CreationDate>
     public static class FReflectionUtility
     {
         #region Field
         private const BindingFlags BINDING_FLAGS = BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy;
 
-        private static readonly IDictionary<Assembly, Type[]> assemblies = new Dictionary<Assembly, Type[]>();
+        private static readonly IDictionary<Assembly, Type[]> _assemblies = new Dictionary<Assembly, Type[]>();
         #endregion
 
         #region Property
@@ -30,7 +25,7 @@ namespace DreamMachineGameStudio.Dreamworks.Utility
         {
             foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
             {
-                assemblies.Add(assembly, assembly.GetTypes());
+                _assemblies.Add(assembly, assembly.GetTypes());
             }
         }
         #endregion
@@ -66,7 +61,7 @@ namespace DreamMachineGameStudio.Dreamworks.Utility
         {
             List<Type> result = new List<Type>();
 
-            foreach (var assemblyTypes in assemblies.Values)
+            foreach (var assemblyTypes in _assemblies.Values)
             {
                 if (type.IsInterface)
                 {
@@ -83,7 +78,7 @@ namespace DreamMachineGameStudio.Dreamworks.Utility
 
         public static Type GetType(string typeName)
         {
-            foreach (Type[] assemblyTypes in assemblies.Values)
+            foreach (Type[] assemblyTypes in _assemblies.Values)
             {
                 Type desireType = assemblyTypes.Where(x => x.FullName.Equals(typeName, StringComparison.OrdinalIgnoreCase)).SingleOrDefault();
 

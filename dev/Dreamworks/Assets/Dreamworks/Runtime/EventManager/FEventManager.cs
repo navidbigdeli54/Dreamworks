@@ -4,39 +4,40 @@
 
 using System;
 using System.Collections.Generic;
-using DreamMachineGameStudio.Dreamworks.Debug;
+using DreamMachineGameStudio.Dreamworks.Core;
 
 namespace DreamMachineGameStudio.Dreamworks.EventManager
 {
-    /// <Author>Navid Bigdeli</Author>
-    /// <CreationDate>December/18/2019</CreationDate>
     public static class FEventManager
     {
         #region Fields
-        private static readonly IDictionary<string, DEventSubscriber> eventTosubscribers = new Dictionary<string, DEventSubscriber>(100, StringComparer.OrdinalIgnoreCase);
+        public const string ON_INITIALIZATION = "OnInitialization";
+        public const string ON_BEGIN_PLAY = "OnBeginPlay";
+        public const string ON_GAME_MODE_LOADED = "OnGameModeLoaded";
+        public const string ON_SCENE_LOADED = "OnSceneLoaded";
+        public const string ON_SCENE_UNLOADED = "OnSceneUnloaded";
+        public const string ON_ACTIVE_SCENE_CHANGED = "OnActiveSceneChanged";
+
+        private static readonly IDictionary<FStringId, DEventSubscriber> eventTosubscribers = new Dictionary<FStringId, DEventSubscriber>(100);
         #endregion
 
         #region Properties
-        public static IReadOnlyDictionary<string, DEventSubscriber> Events => eventTosubscribers as IReadOnlyDictionary<string, DEventSubscriber>;
+        public static IReadOnlyDictionary<FStringId, DEventSubscriber> Events => eventTosubscribers as IReadOnlyDictionary<FStringId, DEventSubscriber>;
         #endregion
 
         #region Methods
-        public static void Publish(string name) => Publish(name, EventArgs.Empty);
+        public static void Publish(FStringId name) => Publish(name, EventArgs.Empty);
 
-        public static void Publish(string name, EventArgs args)
+        public static void Publish(FStringId name, EventArgs args)
         {
-            FAssert.IsFalse(string.IsNullOrEmpty(name));
-
             if (eventTosubscribers.TryGetValue(name, out DEventSubscriber subscribers))
             {
                 subscribers?.Invoke(args);
             }
         }
 
-        public static void Subscribe(string name, DEventSubscriber subscriber)
+        public static void Subscribe(FStringId name, DEventSubscriber subscriber)
         {
-            FAssert.IsFalse(string.IsNullOrEmpty(name));
-
             if (eventTosubscribers.ContainsKey(name))
             {
                 eventTosubscribers[name] += subscriber;
@@ -47,10 +48,8 @@ namespace DreamMachineGameStudio.Dreamworks.EventManager
             }
         }
 
-        public static void Unsubscribe(string name, DEventSubscriber subscriber)
+        public static void Unsubscribe(FStringId name, DEventSubscriber subscriber)
         {
-            FAssert.IsFalse(string.IsNullOrWhiteSpace(name));
-
             if (eventTosubscribers.ContainsKey(name))
             {
                 eventTosubscribers[name] -= subscriber;

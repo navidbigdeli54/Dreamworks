@@ -4,10 +4,5 @@ using UnityEngine;
 
 namespace DreamMachineGameStudio.Dreamworks.Core
 {
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <Author>Navid Bigdeli</Author>
-    /// <CreationDate>January/14/2019</CreationDate>
     public class SScriptableObject : ScriptableObject { }
 }
