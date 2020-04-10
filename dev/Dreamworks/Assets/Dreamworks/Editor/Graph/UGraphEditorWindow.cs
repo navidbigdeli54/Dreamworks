@@ -10,15 +10,15 @@ namespace DreamMachineGameStudio.Dreamworks.Graph.Editor
         #region Fields
         public static UGraphEditorWindow CurrentWindow;
 
-        private IGraphEditor graphEditor = new FGraphEditor();
+        private IGraphEditor _graphEditor = new FGraphEditor();
 
-        private GraphActivity currentActivity = GraphActivity.Idle;
+        private GraphActivity _currentActivity = GraphActivity.Idle;
 
-        private float zoom = 1;
+        private float _zoom = 1;
 
-        private Vector2 panOffset;
+        private Vector2 _panOffset;
 
-        private Rect selectionRect;
+        private Rect _selectionRect;
         #endregion
 
         #region UEditor Methods
@@ -26,7 +26,7 @@ namespace DreamMachineGameStudio.Dreamworks.Graph.Editor
         {
             Controls();
 
-            DrawGrid(position, panOffset, zoom);
+            DrawGrid(position, _panOffset, _zoom);
 
             DrawSelectionBox();
         }
@@ -58,22 +58,22 @@ namespace DreamMachineGameStudio.Dreamworks.Graph.Editor
 
         private void OnScrollWheel(Event currentEvent)
         {
-            float oldZoom = zoom;
+            float oldZoom = _zoom;
 
             if (currentEvent.delta.y > 0)
             {
-                zoom += zoom * FGraphEditorPrefrences.Setting.ZoomStep;
+                _zoom += _zoom * FGraphEditorPrefrences.Setting.ZoomStep;
             }
             else
             {
-                zoom += zoom * FGraphEditorPrefrences.Setting.ZoomStep * -1;
+                _zoom += _zoom * FGraphEditorPrefrences.Setting.ZoomStep * -1;
             }
 
-            zoom = Mathf.Clamp(zoom, FGraphEditorPrefrences.Setting.MinZoom, FGraphEditorPrefrences.Setting.MaxZoom);
+            _zoom = Mathf.Clamp(_zoom, FGraphEditorPrefrences.Setting.MinZoom, FGraphEditorPrefrences.Setting.MaxZoom);
 
             if (FGraphEditorPrefrences.Setting.ShouldZoomToMouse)
             {
-                panOffset += (1 - oldZoom / zoom) * (WindowToGridPosition(currentEvent.mousePosition) + panOffset);
+                _panOffset += (1 - oldZoom / _zoom) * (WindowToGridPosition(currentEvent.mousePosition) + _panOffset);
             }
         }
 
@@ -81,12 +81,12 @@ namespace DreamMachineGameStudio.Dreamworks.Graph.Editor
         {
             if (currentEvent.button == 0)
             {
-                currentActivity = GraphActivity.HoldGrid;
-                selectionRect.position = WindowToGridPosition(currentEvent.mousePosition);
+                _currentActivity = GraphActivity.HoldGrid;
+                _selectionRect.position = WindowToGridPosition(currentEvent.mousePosition);
             }
             else if (currentEvent.button == 2)
             {
-                panOffset += currentEvent.delta * zoom;
+                _panOffset += currentEvent.delta * _zoom;
             }
         }
 
@@ -94,7 +94,7 @@ namespace DreamMachineGameStudio.Dreamworks.Graph.Editor
         {
             if (currentEvent.button == 0)
             {
-                currentActivity = GraphActivity.Idle;
+                _currentActivity = GraphActivity.Idle;
             }
         }
 
@@ -106,24 +106,24 @@ namespace DreamMachineGameStudio.Dreamworks.Graph.Editor
             }
             else if (currentEvent.button == 2)
             {
-                panOffset += currentEvent.delta * zoom;
+                _panOffset += currentEvent.delta * _zoom;
             }
         }
 
         private void OnLeftMouseButtonDrag(Event currentEvent)
         {
-            currentActivity = GraphActivity.DragGrid;
+            _currentActivity = GraphActivity.DragGrid;
             Vector2 currentMousePosition = WindowToGridPosition(currentEvent.mousePosition);
-            selectionRect.size = currentMousePosition - selectionRect.position;
+            _selectionRect.size = currentMousePosition - _selectionRect.position;
         }
 
         private void DrawSelectionBox()
         {
-            if (currentActivity == GraphActivity.DragGrid)
+            if (_currentActivity == GraphActivity.DragGrid)
             {
-                Rect rect = selectionRect;
+                Rect rect = _selectionRect;
                 rect.position = GridToWindowPosition(rect.position);
-                rect.size /= zoom;
+                rect.size /= _zoom;
                 Handles.DrawSolidRectangleWithOutline(rect, new Color(0, 0, 0, 0.1f), new Color(1, 1, 1, 0.6f));
             }
         }
@@ -133,8 +133,8 @@ namespace DreamMachineGameStudio.Dreamworks.Graph.Editor
             rect.position = Vector2.zero;
 
             Vector2 center = rect.size / 2;
-            Texture2D gridTexture = graphEditor.GridTexture;
-            Texture2D crossTexture = graphEditor.CrossTexture;
+            Texture2D gridTexture = _graphEditor.GridTexture;
+            Texture2D crossTexture = _graphEditor.CrossTexture;
 
             float xOffset = -(center.x * zoom + panOffset.x) / gridTexture.width;
             float yOffset = ((center.y - rect.size.y) * zoom + panOffset.y) / gridTexture.height;
@@ -152,12 +152,12 @@ namespace DreamMachineGameStudio.Dreamworks.Graph.Editor
 
         private Vector2 WindowToGridPosition(Vector2 windowPosition)
         {
-            return (windowPosition - (position.size * 0.5f) - (panOffset / zoom)) * zoom;
+            return (windowPosition - (position.size * 0.5f) - (_panOffset / _zoom)) * _zoom;
         }
 
         private Vector2 GridToWindowPosition(Vector2 gridPosition)
         {
-            return (position.size * 0.5f) + (panOffset / zoom) + (gridPosition / zoom);
+            return (position.size * 0.5f) + (_panOffset / _zoom) + (gridPosition / _zoom);
         }
         #endregion
 
