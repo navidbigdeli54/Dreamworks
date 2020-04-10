@@ -1,17 +1,14 @@
 ﻿/**Copyright 2016 - 2020, Dream Machine Game Studio. All Right Reserved.*/
 
 using System;
-using DreamMachineGameStudio.Dreamworks.Core;
 
 namespace DreamMachineGameStudio.Dreamworks.Graph
 {
-    /// <Author>Navid Bigdeli</Author>
-    /// <CreationDate>January/2/2020</CreationDate>
     [AttributeUsage(AttributeTargets.Field)]
-    public class AInput : AName
+    public class FOutputAttribute : FNameAttribute
     {
         #region Constructors
-        public AInput(string name) : base(name) { }
+        public FOutputAttribute(string name) : base(name) { }
         #endregion
     }
 }

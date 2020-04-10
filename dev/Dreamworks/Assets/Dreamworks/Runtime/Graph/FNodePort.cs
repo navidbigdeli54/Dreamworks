@@ -1,8 +1,8 @@
 ﻿/**Copyright 2016 - 2020, Dream Machine Game Studio. All Right Reserved.*/
 
 using System;
-using System.Collections.Generic;
 using UnityEngine;
+using System.Collections.Generic;
 
 namespace DreamMachineGameStudio.Dreamworks.Graph
 {
@@ -14,11 +14,11 @@ namespace DreamMachineGameStudio.Dreamworks.Graph
         #region Fields
         [SerializeField]
         [HideInInspector]
-        private SNode node;
+        private SNode _node;
 
         [SerializeField]
         [HideInInspector]
-        private List<FPortConnection> connections = new List<FPortConnection>();
+        private List<FPortConnection> _connections = new List<FPortConnection>();
         #endregion
     }
 }

@@ -12,7 +12,7 @@ namespace DreamMachineGameStudio.Dreamworks.Graph
     {
         #region Fields
         [SerializeField]
-        private List<SNode> nodes = new List<SNode>();
+        private List<SNode> _nodes = new List<SNode>();
         #endregion
     }
 }

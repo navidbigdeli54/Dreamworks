@@ -5,19 +5,17 @@ using DreamMachineGameStudio.Dreamworks.Core;
 
 namespace DreamMachineGameStudio.Dreamworks.Graph
 {
-    /// <Author>Navid Bigdeli</Author>
-    /// <CreationDate>January/2/2020</CreationDate>
     public abstract class SNode : SScriptableObject
     {
         #region Fields
         [SerializeField]
-        private SGraph graph;
+        private SGraph _graph;
 
         [SerializeField]
-        private Vector2Int position;
+        private Vector2Int _position;
 
         [SerializeField]
-        private FNodePortDictionary ports = new FNodePortDictionary();
+        private FNodePortDictionary _ports = new FNodePortDictionary();
         #endregion
 
         #region Methods
